@@ -33,38 +33,82 @@
      
       <div class="row">
         <div class="col-md-2 ">
-           
+            
             <div class="form-group">
                 <select id="select" class="form-control">
                 </select>
             </div>
          
-		    <input id="upload" type="file"  class="form-control input-md"> 
+		    
 		  <hr/>
+		      <div> Download Annotations:</div>
               <div class="input-group">
                     <input id="download_name" type="text" class="form-control" value="annotations">
                     <div class="input-group-btn">
                         <a id="download" href="" class="btn btn-default"><i class="glyphicon glyphicon-download"></i></a>
                     </div>
       	      </div>  
+      	      <br>
+      	      <div> Upload Annotations:</div>
+      	      <input id="upload" type="file"  class="form-control input-md"> 
         </div>
         
       	<div class="col-md-5 ">
       	        <canvas id="canvas" width=480 height=360></canvas>
       	        <h5 id="details"></h5>
       	</div>
-      	<div class="col-md-5 ">
-      	    
-      	    <div>
-      	        <h5> Legend</h5>
-      	        <div class="col-md-1"></div>
-      	        <div class="col-md-4"></div>
-      	    </div>
-      </div>
-
-
+      
     </div>
-	
+    <h5> Legend</h5>
+	<div class="row">
+	    
+	    <div class="col-md-7">
+            <div class="col-md-1"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></div>
+            <div class="col-md-6">Increase annotation' size</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7">
+            <div class="col-md-1"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></div>
+            <div class="col-md-6">Decrease annotation' size</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7">
+            <div class="col-md-1"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></div>
+            <div class="col-md-6">Previous frame</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7">
+            <div class="col-md-1"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></div>
+            <div class="col-md-6">Next frame</div>
+        </div>
+	</div>
+	<div class="row">
+        <div class="col-md-7">
+            <div class="col-md-1">U</span></div>
+            <div class="col-md-6">Undo last annotation step</div>
+        </div>
+	</div>
+	<div class="row">
+        <div class="col-md-7">
+            <div class="col-md-1">C</span></div>
+            <div class="col-md-6">Clear annotations in current frame</div>
+        </div>
+	</div>
+	<div class="row">
+        <div class="col-md-7">
+            <div class="col-md-1">SPACE</span></div>
+            <div class="col-md-6">Next frame</div>
+        </div>
+	</div>
+	<div class="row">
+        <div class="col-md-7">
+            <div class="col-md-1">P</span></div>
+            <div class="col-md-6">Previous frame</div>
+        </div>
+	</div>
 	
 	
   </body>

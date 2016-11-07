@@ -280,7 +280,7 @@ $(document).ready(function(){ // When the DOM is Ready
                  updateCanvas(canvas, img, detections[currentFrame], current);
             }
             //space, next frame
-            else if (event.keyCode == 32)
+            else if (event.keyCode == 32 || event.keyCode == 39)
             {
                 if (currentFrame < dataset.files.length - 1)
                 {
@@ -302,7 +302,7 @@ $(document).ready(function(){ // When the DOM is Ready
                 current.stateDown();
             }
             //'p' key , previous frame
-            else if (event.keyCode == 80)
+            else if (event.keyCode == 80 || event.keyCode == 37)
             {
                 if (currentFrame > 0)
                 {
@@ -348,6 +348,28 @@ $(document).ready(function(){ // When the DOM is Ready
             }); 
 		    save($('#download'),data, filename);
 	    });
+	    
+	    $('#upload').on('change', function(event) {
+			var file = event.target.files[0];
+			var textType = /json.*/;
+			var self = $(this);
+			
+			if (file.type == "" || file.type.match(textType)) 
+			{
+				var reader = new FileReader();
+
+				reader.onload = function(e) 
+				{
+					var newData = JSON.parse(reader.result);
+					
+				}	
+			} 
+			else 
+			{
+				alert("File not supported!");	
+			}
+	});
+	    
 
     });
 });//ready
