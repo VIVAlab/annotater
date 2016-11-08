@@ -283,6 +283,7 @@ $(document).ready(function(){ // When the DOM is Ready
             {
                 dataset = data[_index];
                 initializeDataset(dataset);
+                $('#canvas').focus();
             }
         });
         
@@ -407,7 +408,7 @@ $(document).ready(function(){ // When the DOM is Ready
 					var newData = JSON.parse(reader.result);
 					initializeDataset(data[newData.dataset]);
 					initializeDetections(newData);
-					$('#canvas').focus();
+					
 					
 					
 				}	
