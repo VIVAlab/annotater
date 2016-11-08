@@ -229,7 +229,7 @@ $(document).ready(function(){ // When the DOM is Ready
    
     ctx.strokeStyle = '#fff';
 
-    $.getJSON("data/datasets.json", function(data) 
+    $.getJSON("./data/datasets.json", function(data) 
     {
         $('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${value}'});
         $('#select').change( function () {
@@ -354,15 +354,19 @@ $(document).ready(function(){ // When the DOM is Ready
 			var textType = /json.*/;
 			var self = $(this);
 			
+			
 			if (file.type == "" || file.type.match(textType)) 
 			{
 				var reader = new FileReader();
-
+    
 				reader.onload = function(e) 
 				{
+				    
 					var newData = JSON.parse(reader.result);
 					
+					
 				}	
+				reader.readAsText(file);
 			} 
 			else 
 			{
