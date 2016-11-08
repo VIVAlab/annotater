@@ -12,7 +12,8 @@ const State = {
     }
 };
 
-const Ratios = {
+var Ratios = {
+    ratio: .8,
     tP: 15,
     mP: 35,
     hP: 55,
@@ -25,23 +26,33 @@ var defaultRatio = .8;
 var dataset       = {};
 var detections = [[]];
 var currentFrame = 0;
+var canvas = null;
+var ctx = null;
+var current = null;
+var img = null;
 
-function UpperBody(canvas, width, height, ratios) {
+function UpperBody(canvas, height, ratios, lX, rX) {
     var self = this;
     
     self.x = 0;
     self.y = 0;
-    self.ratio = width / height;
-    self.w = width;
+    self.ratio = ratios.ratio;
+    self.w = height * self.ratio;
     self.h = height;
     self.canvasH = canvas.height;
     self.canvasW = canvas.width;
     
     self.state = State.HEAD;
     
-
-    self.leftX  = -1;
-    self.rightX = -1;
+    if (lX === undefined)
+        self.leftX  = -1;
+    else 
+        self.leftX = lX;
+    
+    if (rX == undefined)
+        self.rightX = -1;
+    else
+        self.rightX = rX;
     
     
     self.tP = ratios.tP;
@@ -82,10 +93,8 @@ function UpperBody(canvas, width, height, ratios) {
         self.w = self.ratio * self.h;
     }
     this.scaleDown = function() {
-        console.log(self.h);
         self.h -= 1
         self.w = self.ratio * self.h;
-        console.log(self.h);
     }
     
     this.stateUp = function() {
@@ -221,25 +230,60 @@ function save(link, data, filename)
 		console.log("Downloading...");
 }
 
+function initializeDataset(data) {
+    console.log('initialize');
+    dataset = data;
+    img.onload = start;
+    detections = new Array(data.files.length);
+    img.src = dataset.url + dataset.files[currentFrame];
+    return true;
+}
+function initializeDetections(data) {
+    Ratios = data.ratios;
+    current = new UpperBody(canvas, defaultHeight, Ratios);
+    $.each(data.list, function(index, l) {
+        if (Array.isArray(l) && l.length > 0)
+            detections[index] = [];
+        $.each(l, function(idx, head){
+            var x  = head[0];
+            var y  = head[1];
+            var w  = head[2];
+            var h  = head[3];
+            var lx = head[4];
+            var rx = head[5];
+           
+           
+            var height = (h * 100) / ( 2 * Ratios.eVP);
+            var detection = new UpperBody(canvas, height, Ratios, lx , rx)
+            detection.setCenterFace(x + w/2 , y + h/2);
+            detections[index].push(detection);
+        });
+    });
+}
+function start() 
+{
+    updateCanvas(canvas, img, detections[currentFrame], current);
+
+}
+
 $(document).ready(function(){ // When the DOM is Ready
-    var canvas = document.getElementById('canvas');
-    var ctx = canvas.getContext('2d');
-    var current   = new UpperBody(canvas, defaultHeight * defaultRatio, defaultHeight, Ratios);
-    var img       = new Image;
+    canvas    = document.getElementById('canvas');
+    ctx       = canvas.getContext('2d');
+    current   = new UpperBody(canvas, defaultHeight, Ratios);
+    img       = new Image;
    
     ctx.strokeStyle = '#fff';
 
-    $.getJSON("./data/datasets.json", function(data) 
+    $.getJSON("./data/dataset.json", function(data) 
     {
         $('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${value}'});
         $('#select').change( function () {
-            $.getJSON($('#select').val(), function(data) {
-                dataset = data;
-                img.onload = start;
-                detections = new Array(data.files.length);
-                img.src = dataset.url + dataset.files[currentFrame];
-                return true;
-             });
+            var _index = $('#select').val();
+            if (_index > 0 )
+            {
+                dataset = data[_index];
+                initializeDataset(dataset);
+            }
         });
         
         canvas.addEventListener('mousemove',function (e) 
@@ -261,7 +305,7 @@ $(document).ready(function(){ // When the DOM is Ready
                     detections[currentFrame].push(current);
                 else
                     detections[currentFrame] = [current];
-                current = new UpperBody(canvas, defaultHeight * defaultRatio, defaultHeight, Ratios);
+                current = new UpperBody(canvas, defaultHeight, Ratios);
             }
     
         });
@@ -319,16 +363,13 @@ $(document).ready(function(){ // When the DOM is Ready
                 updateCanvas(canvas, img, detections[currentFrame], current);
             }
         });
-        function start() 
-        {
-            updateCanvas(canvas, img, detections[currentFrame], current);
-    
-        }
+        
         $("#download").click(function(event)
         {
-            var filename = sprintf('%s.json', $('#download_name').val());
+            var filename = sprintf('$s.json', $('#download_name').val());
             var data     = 
             {
+                "name": $("#select option:selected").text(),
                 "dataset": $('#select').val(),
                 "canvas": [canvas.width, canvas.height],
                 "ratios": Ratios,
@@ -347,6 +388,7 @@ $(document).ready(function(){ // When the DOM is Ready
                 data.list[frame] = annotation;
             }); 
 		    save($('#download'),data, filename);
+		    $('#canvas').focus();
 	    });
 	    
 	    $('#upload').on('change', function(event) {
@@ -363,6 +405,9 @@ $(document).ready(function(){ // When the DOM is Ready
 				{
 				    
 					var newData = JSON.parse(reader.result);
+					initializeDataset(data[newData.dataset]);
+					initializeDetections(newData);
+					$('#canvas').focus();
 					
 					
 				}	
