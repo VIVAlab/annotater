@@ -116,7 +116,10 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         }
         return self.state;
     }
-    
+    this.pointInsideHeadBBox = function(ptx,pty){
+        [x, y , w, h, lx, rx] = self.headBBoxShoulders();
+        return ptx >= x && ptx <= (x + w) && pty >= y && pty <= (y + h);
+    }
     this.headBBoxShoulders = function() {
         x = self.x + ((50 - self.eHP)/100)* self.w;
         y = self.y + (self.tP/100) * self.h;
@@ -127,7 +130,8 @@ function UpperBody(canvas, height, ratios, lX, rX) {
     
     this.draw = function(image) {
         var ctx = canvas.getContext('2d');
-        
+        var leftLabel = 'Left';
+        var rightLabel = 'Right';
         ctx.save();
         //Solid lines
         ctx.beginPath()
@@ -153,13 +157,13 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         //Draw vertical lines
         if (self.leftX != -1)
         {
-            ctx.fillText('L', self.leftX, self.y );
+            ctx.fillText(leftLabel, self.leftX, self.y );
             ctx.moveTo(self.leftX, self.y);
             ctx.lineTo(self.leftX, self.y + self.h);
         }
         if (self.rightX != -1)
         {
-            ctx.fillText('R', self.rightX , self.y);
+            ctx.fillText(rightLabel, self.rightX , self.y);
             ctx.moveTo(self.rightX, self.y);
             ctx.lineTo(self.rightX, self.y + self.h);
         }
@@ -185,13 +189,13 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         
         if (self.state == State.LEFT)
         {
-            ctx.fillText('L', self.leftX, self.y );
+            ctx.fillText(leftLabel, self.leftX, self.y );
             ctx.moveTo(self.leftX, self.y);
             ctx.lineTo(self.leftX, self.y + self.h);
         }
         else if (self.state == State.RIGHT)
         {
-            ctx.fillText('R', self.rightX , self.y);
+            ctx.fillText(rightLabel, self.rightX , self.y);
             ctx.moveTo(self.leftX, self.y);
             ctx.lineTo(self.leftX, self.y + self.h);
             ctx.moveTo(self.rightX, self.y);
@@ -274,7 +278,7 @@ $(document).ready(function(){ // When the DOM is Ready
    
     ctx.strokeStyle = '#fff';
 
-    $.getJSON("./data/dataset.json", function(data) 
+    $.getJSON("./data/dataset.json?q=3", function(data) 
     {
         $('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${value}'});
         $('#select').change( function () {
@@ -310,6 +314,32 @@ $(document).ready(function(){ // When the DOM is Ready
             }
     
         });
+        canvas.addEventListener('contextmenu', function (e){
+
+         var r = canvas.getBoundingClientRect(),
+                x = e.clientX - r.left,
+                y = e.clientY - r.top;
+          var _idx = -1;
+          var _detection = null;
+          $.each(detections[currentFrame], function(index, detection){
+                var inside = detection.pointInsideHeadBBox(x,y);
+                if (inside)
+                {
+                    _idx = index;
+                    _detection = detection;
+                }
+                
+          });
+          if (_idx != -1)
+          {
+            detections[currentFrame].slice(_idx, 1);
+            current = _detection;
+            current.state = State.HEAD;
+          }
+          e.preventDefault();
+          return(false); 
+          
+        }, false); 
         document.addEventListener('keydown', function(event) 
         {
             //Up Arrow

@@ -14,7 +14,6 @@ from os.path import join
 
 parser = argparse.ArgumentParser()
 parser.add_argument('folders', metavar='N', type=str, nargs='+', help='folder paths')
-parser.add_argument('-e', '--ext', default=".jpg", type=str, help='images file extension')
 parser.add_argument('-o', '--output', default="data/dataset.json", type=str, help='output file')
 parser.add_argument('-n',  default=1000, type=int, help='chunck size')
 args = parser.parse_args()
@@ -22,8 +21,12 @@ args = parser.parse_args()
 datasets = []
 datasets.append({"name": "Select Dataset" , "value": 0, "url": "", "files":[]})
 unique = 1
+exts = ['.jpg', '.png']
 for k, folder in enumerate(args.folders):
-    files = [ basename(f) for f in glob.glob(join(folder, '*%s' % (args.ext)))]
+    files = []
+    for ext in exts:
+        files.extend([basename(f) for f in glob.glob(join(folder, '*%s' % (ext)))])
+    
     chunks = [ files[i:i + args.n] for i in range(0, len(files), args.n)]
     for idx, chunk in enumerate(chunks):
         dataset  = {"name": "sub%d: %d" % (k, idx + 1), "value": unique, "url": folder, "files":chunk}
