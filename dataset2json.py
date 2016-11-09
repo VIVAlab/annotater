@@ -11,6 +11,7 @@ import json
 import glob
 from os.path import basename
 from os.path import join
+import cv2
 
 parser = argparse.ArgumentParser()
 parser.add_argument('folders', metavar='N', type=str, nargs='+', help='folder paths')
@@ -18,8 +19,11 @@ parser.add_argument('-o', '--output', default="data/dataset.json", type=str, hel
 parser.add_argument('-n',  default=1000, type=int, help='chunck size')
 args = parser.parse_args()
 
+
+
+
 datasets = []
-datasets.append({"name": "Select Dataset" , "value": 0, "url": "", "files":[]})
+datasets.append({"name": "Select Dataset" , "value": 0, "url": "", "files":[], "detections":{} })
 unique = 1
 exts = ['.jpg', '.png']
 for k, folder in enumerate(args.folders):
@@ -28,8 +32,13 @@ for k, folder in enumerate(args.folders):
         files.extend([basename(f) for f in glob.glob(join(folder, '*%s' % (ext)))])
     
     chunks = [ files[i:i + args.n] for i in range(0, len(files), args.n)]
+    total = len(chunks)
     for idx, chunk in enumerate(chunks):
-        dataset  = {"name": "sub%d: %d" % (k, idx + 1), "value": unique, "url": folder, "files":chunk}
+        name  = "sub%d: %d" % (k, idx + 1)
+        value = unique
+        ratios    = {'ratio':0, 'tP':0, 'mP':0, 'hP':0, 'eVP':0, 'eHP':0}
+        detection = {'name': name, 'dataset': value, 'canvas':[480, 360], 'ratios': ratios, 'list':[]}
+        dataset   = {"name": name, "value": value, "url": folder, "files":chunk, "detections":detection}
         datasets.append(dataset)
         unique+=1
 
