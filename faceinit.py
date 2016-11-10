@@ -32,7 +32,7 @@ def findFaces(cascade, filename, scale, minN):
     annotations = []
     for face in faces:
         (x,y,w,h) = face
-        annotation = [x, y , w, h, x - 50, x + w + 50]
+        annotation = [int(x), int(y) , int(w), int(h), int(x - 50), int(x + w + 50)]
         annotations.append(annotation)
     return annotations
 
@@ -46,8 +46,7 @@ ratios = { "ratio": 0.8, "tP": 15, "mP": 35, "hP": 55, "eVP": 20,"eHP": 16}
 
 
 for idx,dataset in enumerate(datasets):
-    sys.stdout.write( '%.2f %%' % (100*(idx + 1) / len(datasets)))
-    for f in dataset['files']:
+    for _i, f in enumerate(dataset['files']):
         filename = join(dataset['url'], f)
         faces = findFaces(cascade, filename, args.scale, args.minN)
         dataset['detections']['ratios'] = ratios
@@ -57,11 +56,13 @@ for idx,dataset in enumerate(datasets):
         if (len(faces) == 0):
             dataset['detections']['list'].append(None)
         else:
-            dataset['detections']['list'].append(faces)
+           dataset['detections']['list'].append(faces)
     sys.stdout.write('\r')
+    sys.stdout.write( '%.2f %%' % (100*(idx + 1) / len(datasets)))
     sys.stdout.flush()
 
 
 with open(args.output, 'w') as f:
-    f.write(json.dumps(datasets, sort_keys=True, indent=4))
+    js = json.dumps(datasets, indent=4)
+    f.write(js)
     f.close()

@@ -136,6 +136,7 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         //Solid lines
         ctx.beginPath()
         //Big box
+        console.log(self.x + " " + self.y);
         ctx.moveTo(self.x,  self.y);
         ctx.lineTo(self.x + self.w , self.y);
         ctx.lineTo(self.x + self.w , self.y + self.h );
@@ -237,6 +238,8 @@ function save(link, data, filename)
 function initializeDataset(data) {
     console.log('initialize');
     dataset = data;
+    canvas.width = data.canvas[0]
+    canvas.height = data.canvas[1]
     img.onload = start;
     detections = new Array(data.files.length);
     img.src = dataset.url + dataset.files[currentFrame];
@@ -255,11 +258,15 @@ function initializeDetections(data) {
             var h  = head[3];
             var lx = head[4];
             var rx = head[5];
-           
+           if (index == 5)
+            console.log([x + w/2 , y + h/2]);
            
             var height = (h * 100) / ( 2 * Ratios.eVP);
             var detection = new UpperBody(canvas, height, Ratios, lx , rx)
             detection.setCenterFace(x + w/2 , y + h/2);
+            if (index == 5)
+            console.log(detection);
+            
             detections[index].push(detection);
         });
     });
@@ -287,6 +294,7 @@ $(document).ready(function(){ // When the DOM is Ready
             {
                 dataset = data[_index];
                 initializeDataset(dataset);
+                initializeDetections(dataset.detections);
                 $('#canvas').focus();
             }
         });
