@@ -136,11 +136,7 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         //Solid lines
         ctx.beginPath()
         //Big box
-        ctx.moveTo(self.x,  self.y);
-        ctx.lineTo(self.x + self.w , self.y);
-        ctx.lineTo(self.x + self.w , self.y + self.h );
-        ctx.lineTo(self.x,  self.y + self.h );
-        ctx.lineTo(self.x,  self.y);
+        
         //Guide Line
         ty = self.y + (self.tP/100) * self.h;
         by = self.y + (self.hP/100) * self.h;    
@@ -150,8 +146,17 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         //Ellipse
         rY = (self.eHP/100) * self.h;
         rX = (self.eVP/100) * self.h;
-        ctx.moveTo(self.x + self.w, by);
         ctx.ellipse(mx, my, rX, rY , Math.PI / 2, 0, 2 * Math.PI);
+        
+        if (self.leftX != -1 && self.rightX != -1)
+        {
+        ctx.moveTo(self.leftX, self.y);
+        ctx.lineTo(self.rightX, self.y);
+        ctx.moveTo(self.leftX, self.y + self.h);
+        ctx.lineTo(self.rightX, self.y + self.h);
+         
+        }
+        
         
         ctx.fillStyle = 'orange';
         //Draw vertical lines
@@ -174,10 +179,6 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         ctx.setLineDash([2]);
         ctx.beginPath()
         //Horizontal Middle Lines
-        ctx.moveTo(self.x, ty);
-        ctx.lineTo(self.x + self.w, ty);
-        ctx.moveTo(self.x, by);
-        ctx.lineTo(self.x + self.w, by);
         //Middle line
         ctx.moveTo(mx, self.y);
         ctx.lineTo(mx, self.y+self.h);
@@ -201,6 +202,8 @@ function UpperBody(canvas, height, ratios, lX, rX) {
             ctx.moveTo(self.rightX, self.y);
             ctx.lineTo(self.rightX, self.y + self.h);
         }
+        
+        
        
         ctx.stroke();
         ctx.restore();
