@@ -136,7 +136,6 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         //Solid lines
         ctx.beginPath()
         //Big box
-        console.log(self.x + " " + self.y);
         ctx.moveTo(self.x,  self.y);
         ctx.lineTo(self.x + self.w , self.y);
         ctx.lineTo(self.x + self.w , self.y + self.h );
@@ -219,7 +218,6 @@ function updateCanvas(canvas, image, detections, current) {
     }
     ctx.strokeStyle = '#fff';
     current.draw(image);
-    
     $("#details").html(sprintf("Frame: $d / $d ",currentFrame, dataset.files.length - 1));
 }
 
@@ -258,14 +256,11 @@ function initializeDetections(data) {
             var h  = head[3];
             var lx = head[4];
             var rx = head[5];
-           if (index == 5)
-            console.log([x + w/2 , y + h/2]);
            
             var height = (h * 100) / ( 2 * Ratios.eVP);
             var detection = new UpperBody(canvas, height, Ratios, lx , rx)
             detection.setCenterFace(x + w/2 , y + h/2);
-            if (index == 5)
-            console.log(detection);
+            
             
             detections[index].push(detection);
         });
@@ -294,7 +289,9 @@ $(document).ready(function(){ // When the DOM is Ready
             {
                 dataset = data[_index];
                 initializeDataset(dataset);
-                initializeDetections(dataset.detections);
+                if (dataset.detections.list.length > 0)
+                    initializeDetections(dataset.detections);
+                currentFrame = 0;
                 $('#canvas').focus();
             }
         });
