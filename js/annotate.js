@@ -322,6 +322,23 @@ $(document).ready(function(){ // When the DOM is Ready
             }
     
         });
+        
+        canvas.addEventListener('mousewheel',function(event){
+            
+             if (event.deltaY > 0)
+             {
+                 current.scaleUp();
+                 updateCanvas(canvas, img, detections[currentFrame], current);
+             }
+             if (event.deltaY < 0)
+             {
+                current.scaleDown();
+                updateCanvas(canvas, img, detections[currentFrame], current);
+             }
+             return false; 
+        }, false);
+        
+        
         canvas.addEventListener('contextmenu', function (e){
 
          var r = canvas.getBoundingClientRect(),
