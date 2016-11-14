@@ -210,18 +210,29 @@ function UpperBody(canvas, height, ratios, lX, rX) {
     }
 }
 
-function updateCanvas(canvas, image, detections, current) {
+function updateCanvas(canvas, image, dets, current) {
     var ctx = canvas.getContext('2d');
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = '#ff0';
-    if (Array.isArray(detections))
+    if (Array.isArray(dets))
+    for (var i = 0; i < dets.length; i++)
+    {
+        dets[i].draw(image);
+    }
+    var total = 0;
     for (var i = 0; i < detections.length; i++)
     {
-        detections[i].draw(image);
+        if (Array.isArray(detections[i]))
+        {
+            total += detections[i].length;
+        }
     }
     ctx.strokeStyle = '#fff';
     current.draw(image);
-    $("#details").html(sprintf("Frame: $d / $d ",currentFrame, dataset.files.length - 1));
+    
+    
+    
+    $("#details").html(sprintf("Frame: $d / $d <span class='pull-right'>  $d detections</span>",currentFrame, dataset.files.length - 1, total));
 }
 
 function save(link, data, filename)
@@ -243,6 +254,7 @@ function initializeDataset(data) {
     canvas.height = data.canvas[1]
     img.onload = start;
     detections = new Array(data.files.length);
+    currentFrame = 0;
     img.src = dataset.url + dataset.files[currentFrame];
     return true;
 }
@@ -294,7 +306,7 @@ $(document).ready(function(){ // When the DOM is Ready
                 initializeDataset(dataset);
                 if (dataset.detections.list.length > 0)
                     initializeDetections(dataset.detections);
-                currentFrame = 0;
+                
                 $('#canvas').focus();
             }
         });
@@ -463,7 +475,7 @@ $(document).ready(function(){ // When the DOM is Ready
 					var newData = JSON.parse(reader.result);
 					initializeDataset(data[newData.dataset]);
 					initializeDetections(newData);
-					
+					$('#select').val(newData.dataset);
 					
 					
 				}	
