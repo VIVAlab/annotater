@@ -32,37 +32,38 @@ def findFaces(cascade, filename, scale, minN):
     annotations = []
     for face in faces:
         (x,y,w,h) = face
-        annotation = [int(x), int(y) , int(w), int(h), int(x - 50), int(x + w + 50)]
+        newW = w * 100 / 32
+        centerW = x + w/2
+        annotation = [int(x), int(y) , int(w), int(h), int(centerW- newW/2), int(centerW + newW/2)]
         annotations.append(annotation)
     return annotations
 
 cascade = cv2.CascadeClassifier(args.classifier)
 
 with open(args.dataset) as f:
-    datasets = json.load(f)
+    dataset = json.load(f)
 
 canvas = [480, 360]
 ratios = { "ratio": 0.8, "tP": 15, "mP": 35, "hP": 55, "eVP": 20,"eHP": 16}
 
+dataset['ratios'] = ratios
+first = True
+for _i, f in enumerate(dataset['frames']):
+    filename = join(dataset['url'], f['file'])
+    if first:
+        rows, cols, channels = cv2.imread(filename).shape
+        dataset['canvas'] = [cols, rows]
+        first = False
+    faces = findFaces(cascade, filename, args.scale, args.minN)
 
-for idx,dataset in enumerate(datasets):
-    for _i, f in enumerate(dataset['files']):
-        filename = join(dataset['url'], f)
-        faces = findFaces(cascade, filename, args.scale, args.minN)
-        dataset['detections']['ratios'] = ratios
-        dataset['detections']['canvas'] = canvas
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        if (len(faces) == 0):
-            dataset['detections']['list'].append(None)
-        else:
-           dataset['detections']['list'].append(faces)
-    sys.stdout.write('\r')
-    sys.stdout.write( '%.2f %%' % (100*(idx + 1) / len(datasets)))
+    sys.stdout.write('.')
     sys.stdout.flush()
+    f['locations'] = faces
+sys.stdout.write('\r')
+sys.stdout.flush()
 
 
 with open(args.output, 'w') as f:
-    js = json.dumps(datasets, indent=4)
+    js = json.dumps(dataset, indent=4)
     f.write(js)
     f.close()

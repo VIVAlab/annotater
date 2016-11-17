@@ -298,7 +298,7 @@ $(document).ready(function(){ // When the DOM is Ready
     
   
 
-    $.getJSON(sprintf("./data/datasets.json?q=$d", Math.random()), function(data) 
+    $.getJSON(sprintf("./data/datasets.json?q=$f", Math.random()), function(data) 
     {
        
         $('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${url}'});
@@ -306,8 +306,10 @@ $(document).ready(function(){ // When the DOM is Ready
             var _url = $('#select').val();
             if (_url != "" )
             {
-                $.getJSON(_url, function(data) {
+                console.log(sprintf('$s?q=$f',_url, Math.random()))
+                $.getJSON(sprintf('$s?q=$f',_url, Math.random()), function(data) {
                     initializeDataset(data);
+                    initializeDetections(data);
                 });
                 
                 $('#canvas').focus();
