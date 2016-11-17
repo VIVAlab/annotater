@@ -1,0 +1,7 @@
+[   
+    {"name": "Select Dataset", "url": ""},
+    {"name": "cam0", "url": "data/captures/0/data.json"},
+    {"name": "cam1", "url": "data/captures/1/data.json"},
+    {"name": "cam2", "url": "data/captures/2/data.json"},
+    {"name": "cam3", "url": "data/captures/3/data.json"}
+]

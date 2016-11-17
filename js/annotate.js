@@ -232,7 +232,7 @@ function updateCanvas(canvas, image, dets, current) {
     
     
     
-    $("#details").html(sprintf("Frame: $d / $d <span class='pull-right'>  $d detections</span>",currentFrame, dataset.files.length - 1, total));
+    $("#details").html(sprintf("Frame: $d / $d <span class='pull-right'>  $d detections</span>",currentFrame, dataset.frames.length - 1, total));
 }
 
 function save(link, data, filename)
@@ -253,18 +253,19 @@ function initializeDataset(data) {
     canvas.width = data.canvas[0]
     canvas.height = data.canvas[1]
     img.onload = start;
-    detections = new Array(data.files.length);
+    detections = new Array(data.frames.length);
     currentFrame = 0;
-    img.src = dataset.url + dataset.files[currentFrame];
+    img.src = dataset.url + dataset.frames[currentFrame].file;
     return true;
 }
 function initializeDetections(data) {
     Ratios = data.ratios;
     current = new UpperBody(canvas, defaultHeight, Ratios);
-    $.each(data.list, function(index, l) {
-        if (Array.isArray(l) && l.length > 0)
+    $.each(data.frames, function(index, frame) {
+        if (Array.isArray(frame.locations) && frame.locations.length > 0)
             detections[index] = [];
-        $.each(l, function(idx, head){
+            
+        $.each(frame.locations, function(idx, head){
             var x  = head[0];
             var y  = head[1];
             var w  = head[2];
@@ -294,18 +295,20 @@ $(document).ready(function(){ // When the DOM is Ready
     img       = new Image;
    
     ctx.strokeStyle = '#fff';
+    
+  
 
-    $.getJSON(sprintf("./data/dataset.json?q=$d", Math.random()), function(data) 
+    $.getJSON(sprintf("./data/datasets.json?q=$d", Math.random()), function(data) 
     {
-        $('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${value}'});
+       
+        $('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${url}'});
         $('#select').change( function () {
-            var _index = $('#select').val();
-            if (_index > 0 )
+            var _url = $('#select').val();
+            if (_url != "" )
             {
-                dataset = data[_index];
-                initializeDataset(dataset);
-                if (dataset.detections.list.length > 0)
-                    initializeDetections(dataset.detections);
+                $.getJSON(_url, function(data) {
+                    initializeDataset(data);
+                });
                 
                 $('#canvas').focus();
             }
@@ -394,10 +397,10 @@ $(document).ready(function(){ // When the DOM is Ready
             //space, next frame
             else if (event.keyCode == 32 || event.keyCode == 39)
             {
-                if (currentFrame < dataset.files.length - 1)
+                if (currentFrame < dataset.frames.length - 1)
                 {
                     currentFrame++;
-                    img.src = dataset.url + dataset.files[currentFrame];
+                    img.src = dataset.url + dataset.frames[currentFrame].file;
                     updateCanvas(canvas, img, detections[currentFrame], current);
                 }
             }
@@ -419,7 +422,7 @@ $(document).ready(function(){ // When the DOM is Ready
                 if (currentFrame > 0)
                 {
                     currentFrame--;
-                    img.src = dataset.url + dataset.files[currentFrame];
+                    img.src = dataset.url + dataset.frames[currentFrame].file;
                     updateCanvas(canvas, img, detections[currentFrame], current);
                 }
             }
@@ -435,17 +438,10 @@ $(document).ready(function(){ // When the DOM is Ready
         $("#download").click(function(event)
         {
             var filename = sprintf('$s.json', $('#download_name').val());
-            var data     = 
-            {
-                "name": $("#select option:selected").text(),
-                "dataset": $('#select').val(),
-                "canvas": [canvas.width, canvas.height],
-                "ratios": Ratios,
-                "list": Array(detections.length)
-            };
+            var data    = dataset;
             $.each(detections, function(frame, det) {
                 
-                var annotation = null;
+                var annotation = [];
                 if (Array.isArray(det) && det.length > 0)
                 {
                     annotation = []
@@ -453,7 +449,7 @@ $(document).ready(function(){ // When the DOM is Ready
                         annotation.push(d.headBBoxShoulders());
                     });
                 }
-                data.list[frame] = annotation;
+                data.frames[frame].locations = annotation;
             }); 
 		    save($('#download'),data, filename);
 		    $('#canvas').focus();
@@ -472,11 +468,18 @@ $(document).ready(function(){ // When the DOM is Ready
 				reader.onload = function(e) 
 				{
 				    
+				    
 					var newData = JSON.parse(reader.result);
-					initializeDataset(data[newData.dataset]);
+					var data = [   
+                             {"name": newData.name, "url": newData.url},
+    
+                    ];
+                    
+					$('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${url}'});
+					$('#select').val(newData.url);
+					$('#canvas').focus();
+					initializeDataset(newData);
 					initializeDetections(newData);
-					$('#select').val(newData.dataset);
-					
 					
 				}	
 				reader.readAsText(file);
