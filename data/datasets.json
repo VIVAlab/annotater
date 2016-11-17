@@ -1,7 +1,9 @@
 [   
     {"name": "Select Dataset", "url": ""},
-    {"name": "cam0", "url": "data/captures/0/data.json"},
-    {"name": "cam1", "url": "data/captures/1/data.json"},
-    {"name": "cam2", "url": "data/captures/2/data.json"},
-    {"name": "cam3", "url": "data/captures/3/data.json"}
+    {"name": "cam0", "url": "data/captures/cam0/data.json"},
+    {"name": "cam1", "url": "data/captures/cam1/data.json"},
+    {"name": "cam2", "url": "data/captures/cam2/data.json"},
+    {"name": "cam3", "url": "data/captures/cam3/data.json"},
+    {"name": "cam4", "url": "data/captures/cam4/data.json"},
+    {"name": "cam5", "url": "data/captures/cam5/data.json"}
 ]
