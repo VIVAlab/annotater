@@ -306,10 +306,10 @@ $(document).ready(function(){ // When the DOM is Ready
             var _url = $('#select').val();
             if (_url != "" )
             {
-                console.log(sprintf('$s?q=$f',_url, Math.random()))
                 $.getJSON(sprintf('$s?q=$f',_url, Math.random()), function(data) {
                     initializeDataset(data);
-                    initializeDetections(data);
+                    //Only to show ground-truth annotations
+                    //initializeDetections(data);
                 });
                 
                 $('#canvas').focus();

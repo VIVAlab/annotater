@@ -5,5 +5,8 @@
     {"name": "cam2", "url": "data/captures/cam2/data.json"},
     {"name": "cam3", "url": "data/captures/cam3/data.json"},
     {"name": "cam4", "url": "data/captures/cam4/data.json"},
-    {"name": "cam5", "url": "data/captures/cam5/data.json"}
+    {"name": "cam5", "url": "data/captures/cam5/data.json"},
+    {"name": "video1", "url": "data/captures/video1/data.json"},
+    {"name": "video2", "url": "data/captures/video2/data.json"},
+    {"name": "video3", "url": "data/captures/video3/data.json"}
 ]
