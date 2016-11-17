@@ -15,6 +15,7 @@ import cv2
 
 
 
+
 def extractAnnotationsOfSize(path, locs, width, height):
     a = cv2.imread(path)
     oR, oC, oCn = a.shape
@@ -50,29 +51,30 @@ def extractAnnotationsOfSize(path, locs, width, height):
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--dataset', default="data/dataset.json", type=str, help='dataset file')
 parser.add_argument('-f', '--folder', default="extract", type=str, help='folder')
-parser.add_argument('annotation', type=str, help='annotation file')
+parser.add_argument('annotation', type=str, metavar='N', nargs='+',
+                    help='annotated files')
+
 args = parser.parse_args()
 
 with open(args.dataset) as f:
     datasets = json.load(f)
-
-with open(args.annotation) as f:
-    annotation = json.load(f)
-
-dataset = datasets[int(annotation['dataset'])]
-
 
 if not os.path.exists(args.folder):
     os.makedirs(args.folder)
 
 number = 0
 
-for idx, locations in enumerate(annotation['list']):
+for _json in args.annotation:
+    with open(_json) as f:
+        annotation = json.load(f)
 
-    if locations != None:
-        filename = dataset['files'][idx]
-        path     = join(dataset['url'], filename)
-        imgs = extractAnnotationsOfSize(path, locations, 64, 80)
-        for img in imgs:
-            cv2.imwrite(join(args.folder, '%05d.jpg' % (number)), img)
-            number +=1
+    dataset = datasets[int(annotation['dataset'])]
+
+    for idx, locations in enumerate(annotation['list']):
+        if locations != None:
+            filename = dataset['files'][idx]
+            path     = join(dataset['url'], filename)
+            imgs = extractAnnotationsOfSize(path, locations, 64, 80)
+            for img in imgs:
+                cv2.imwrite(join(args.folder, '%05d.png' % (number)), img)
+                number +=1

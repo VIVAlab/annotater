@@ -295,7 +295,7 @@ $(document).ready(function(){ // When the DOM is Ready
    
     ctx.strokeStyle = '#fff';
 
-    $.getJSON("./data/dataset.json?q=3", function(data) 
+    $.getJSON(sprintf("./data/dataset.json?q=$d", Math.random()), function(data) 
     {
         $('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${value}'});
         $('#select').change( function () {
