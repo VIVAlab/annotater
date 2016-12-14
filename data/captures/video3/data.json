@@ -1,0 +1,2332 @@
+{
+    "frames": [
+        {
+            "locations": [], 
+            "file": "0000035100.png"
+        }, 
+        {
+            "locations": [
+                [
+                    185, 
+                    152, 
+                    43, 
+                    43, 
+                    139, 
+                    273
+                ]
+            ], 
+            "file": "0000024800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014900.png"
+        }, 
+        {
+            "locations": [
+                [
+                    79, 
+                    98, 
+                    47, 
+                    47, 
+                    29, 
+                    175
+                ]
+            ], 
+            "file": "0000035400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    440, 
+                    233, 
+                    72, 
+                    72, 
+                    364, 
+                    588
+                ]
+            ], 
+            "file": "0000028000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000032400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    307, 
+                    77, 
+                    42, 
+                    42, 
+                    263, 
+                    393
+                ]
+            ], 
+            "file": "0000006900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    443, 
+                    238, 
+                    62, 
+                    62, 
+                    378, 
+                    570
+                ]
+            ], 
+            "file": "0000015200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    302, 
+                    46, 
+                    26, 
+                    26, 
+                    275, 
+                    355
+                ]
+            ], 
+            "file": "0000010300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    409, 
+                    53, 
+                    34, 
+                    34, 
+                    373, 
+                    479
+                ]
+            ], 
+            "file": "0000017200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000005900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000034700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    41, 
+                    76, 
+                    60, 
+                    60, 
+                    -22, 
+                    164
+                ]
+            ], 
+            "file": "0000006200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    519, 
+                    148, 
+                    43, 
+                    43, 
+                    473, 
+                    607
+                ]
+            ], 
+            "file": "0000028200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    494, 
+                    27, 
+                    57, 
+                    57, 
+                    433, 
+                    611
+                ]
+            ], 
+            "file": "0000002900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000031300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014600.png"
+        }, 
+        {
+            "locations": [
+                [
+                    361, 
+                    157, 
+                    45, 
+                    45, 
+                    313, 
+                    453
+                ], 
+                [
+                    438, 
+                    232, 
+                    70, 
+                    70, 
+                    364, 
+                    582
+                ]
+            ], 
+            "file": "0000023800.png"
+        }, 
+        {
+            "locations": [
+                [
+                    588, 
+                    14, 
+                    46, 
+                    46, 
+                    540, 
+                    682
+                ]
+            ], 
+            "file": "0000006400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009100.png"
+        }, 
+        {
+            "locations": [
+                [
+                    272, 
+                    59, 
+                    32, 
+                    32, 
+                    238, 
+                    338
+                ]
+            ], 
+            "file": "0000010900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000011400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000032900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000006600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000019300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000005600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    504, 
+                    120, 
+                    61, 
+                    61, 
+                    439, 
+                    629
+                ]
+            ], 
+            "file": "0000001500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000011500.png"
+        }, 
+        {
+            "locations": [
+                [
+                    409, 
+                    240, 
+                    52, 
+                    52, 
+                    354, 
+                    516
+                ]
+            ], 
+            "file": "0000027600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    484, 
+                    119, 
+                    43, 
+                    43, 
+                    438, 
+                    572
+                ]
+            ], 
+            "file": "0000026600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004500.png"
+        }, 
+        {
+            "locations": [
+                [
+                    511, 
+                    140, 
+                    44, 
+                    44, 
+                    465, 
+                    601
+                ]
+            ], 
+            "file": "0000028100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000021100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000027500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000023900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000026000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025900.png"
+        }, 
+        {
+            "locations": [
+                [
+                    303, 
+                    49, 
+                    25, 
+                    25, 
+                    276, 
+                    354
+                ]
+            ], 
+            "file": "0000010400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    200, 
+                    241, 
+                    50, 
+                    50, 
+                    147, 
+                    303
+                ]
+            ], 
+            "file": "0000011800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000034100.png"
+        }, 
+        {
+            "locations": [
+                [
+                    503, 
+                    151, 
+                    44, 
+                    44, 
+                    457, 
+                    593
+                ], 
+                [
+                    272, 
+                    206, 
+                    47, 
+                    47, 
+                    222, 
+                    368
+                ]
+            ], 
+            "file": "0000026800.png"
+        }, 
+        {
+            "locations": [
+                [
+                    274, 
+                    62, 
+                    29, 
+                    29, 
+                    243, 
+                    333
+                ], 
+                [
+                    208, 
+                    244, 
+                    42, 
+                    42, 
+                    164, 
+                    294
+                ]
+            ], 
+            "file": "0000011000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000011300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    270, 
+                    204, 
+                    50, 
+                    50, 
+                    217, 
+                    373
+                ], 
+                [
+                    440, 
+                    237, 
+                    67, 
+                    67, 
+                    369, 
+                    577
+                ]
+            ], 
+            "file": "0000027900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000001700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000011600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000011100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020500.png"
+        }, 
+        {
+            "locations": [
+                [
+                    261, 
+                    38, 
+                    24, 
+                    24, 
+                    236, 
+                    310
+                ], 
+                [
+                    166, 
+                    162, 
+                    44, 
+                    44, 
+                    120, 
+                    256
+                ]
+            ], 
+            "file": "0000026100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    340, 
+                    61, 
+                    27, 
+                    27, 
+                    311, 
+                    395
+                ]
+            ], 
+            "file": "0000032800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000002200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    364, 
+                    18, 
+                    24, 
+                    24, 
+                    339, 
+                    413
+                ]
+            ], 
+            "file": "0000008500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017900.png"
+        }, 
+        {
+            "locations": [
+                [
+                    367, 
+                    149, 
+                    49, 
+                    49, 
+                    315, 
+                    467
+                ]
+            ], 
+            "file": "0000019900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000002600.png"
+        }, 
+        {
+            "locations": [
+                [
+                    187, 
+                    152, 
+                    44, 
+                    44, 
+                    141, 
+                    277
+                ]
+            ], 
+            "file": "0000012800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000023100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    312, 
+                    78, 
+                    38, 
+                    38, 
+                    272, 
+                    390
+                ]
+            ], 
+            "file": "0000006800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000010000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    7, 
+                    32, 
+                    49, 
+                    49, 
+                    -45, 
+                    107
+                ]
+            ], 
+            "file": "0000000300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000031700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000035300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000005100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004600.png"
+        }, 
+        {
+            "locations": [
+                [
+                    272, 
+                    203, 
+                    52, 
+                    52, 
+                    217, 
+                    379
+                ]
+            ], 
+            "file": "0000028500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000005700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000032200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000026400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000028800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    16, 
+                    104, 
+                    61, 
+                    61, 
+                    -49, 
+                    141
+                ]
+            ], 
+            "file": "0000006500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000031400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000028900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009500.png"
+        }, 
+        {
+            "locations": [
+                [
+                    469, 
+                    134, 
+                    47, 
+                    47, 
+                    419, 
+                    565
+                ]
+            ], 
+            "file": "0000019500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    241, 
+                    70, 
+                    65, 
+                    65, 
+                    172, 
+                    374
+                ], 
+                [
+                    284, 
+                    129, 
+                    83, 
+                    83, 
+                    196, 
+                    454
+                ]
+            ], 
+            "file": "0000004400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000002300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    100, 
+                    106, 
+                    45, 
+                    45, 
+                    52, 
+                    192
+                ], 
+                [
+                    142, 
+                    218, 
+                    59, 
+                    59, 
+                    79, 
+                    263
+                ]
+            ], 
+            "file": "0000005400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000034800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007800.png"
+        }, 
+        {
+            "locations": [
+                [
+                    425, 
+                    138, 
+                    49, 
+                    49, 
+                    373, 
+                    525
+                ]
+            ], 
+            "file": "0000019700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000035200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    350, 
+                    96, 
+                    51, 
+                    51, 
+                    296, 
+                    454
+                ]
+            ], 
+            "file": "0000027000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000034000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    303, 
+                    152, 
+                    48, 
+                    48, 
+                    252, 
+                    402
+                ]
+            ], 
+            "file": "0000023700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000002500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    517, 
+                    147, 
+                    40, 
+                    40, 
+                    475, 
+                    599
+                ], 
+                [
+                    409, 
+                    238, 
+                    55, 
+                    55, 
+                    351, 
+                    521
+                ]
+            ], 
+            "file": "0000028300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000023200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    440, 
+                    237, 
+                    68, 
+                    68, 
+                    368, 
+                    580
+                ]
+            ], 
+            "file": "0000034900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033900.png"
+        }, 
+        {
+            "locations": [
+                [
+                    247, 
+                    64, 
+                    28, 
+                    28, 
+                    218, 
+                    304
+                ]
+            ], 
+            "file": "0000023000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030900.png"
+        }, 
+        {
+            "locations": [
+                [
+                    311, 
+                    50, 
+                    28, 
+                    28, 
+                    282, 
+                    368
+                ]
+            ], 
+            "file": "0000010800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000032700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000011900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000002700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    204, 
+                    241, 
+                    49, 
+                    49, 
+                    152, 
+                    304
+                ]
+            ], 
+            "file": "0000026500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000027800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000021300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000011700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    183, 
+                    74, 
+                    49, 
+                    49, 
+                    131, 
+                    283
+                ]
+            ], 
+            "file": "0000021500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000019200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    206, 
+                    19, 
+                    30, 
+                    30, 
+                    175, 
+                    267
+                ], 
+                [
+                    505, 
+                    154, 
+                    43, 
+                    43, 
+                    459, 
+                    593
+                ]
+            ], 
+            "file": "0000027200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000031200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000900.png"
+        }, 
+        {
+            "locations": [
+                [
+                    513, 
+                    121, 
+                    53, 
+                    53, 
+                    457, 
+                    621
+                ]
+            ], 
+            "file": "0000001200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000006300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    483, 
+                    146, 
+                    135, 
+                    135, 
+                    340, 
+                    760
+                ]
+            ], 
+            "file": "0000021900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000005300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    298, 
+                    49, 
+                    29, 
+                    29, 
+                    267, 
+                    357
+                ]
+            ], 
+            "file": "0000010700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    520, 
+                    141, 
+                    39, 
+                    39, 
+                    479, 
+                    599
+                ]
+            ], 
+            "file": "0000028400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    505, 
+                    152, 
+                    39, 
+                    39, 
+                    464, 
+                    584
+                ]
+            ], 
+            "file": "0000027400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000010100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000005000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    29, 
+                    44, 
+                    25, 
+                    25, 
+                    2, 
+                    80
+                ]
+            ], 
+            "file": "0000031900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    323, 
+                    89, 
+                    29, 
+                    29, 
+                    292, 
+                    382
+                ]
+            ], 
+            "file": "0000034300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000028600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000023300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000021200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008800.png"
+        }, 
+        {
+            "locations": [
+                [
+                    507, 
+                    156, 
+                    43, 
+                    43, 
+                    461, 
+                    595
+                ]
+            ], 
+            "file": "0000026900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    440, 
+                    238, 
+                    65, 
+                    65, 
+                    371, 
+                    573
+                ]
+            ], 
+            "file": "0000026200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    516, 
+                    124, 
+                    54, 
+                    54, 
+                    459, 
+                    627
+                ]
+            ], 
+            "file": "0000001400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000001900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    186, 
+                    74, 
+                    47, 
+                    47, 
+                    136, 
+                    282
+                ]
+            ], 
+            "file": "0000021600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000035700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000031600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000014300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    375, 
+                    142, 
+                    48, 
+                    48, 
+                    324, 
+                    474
+                ]
+            ], 
+            "file": "0000019800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000023400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    315, 
+                    38, 
+                    24, 
+                    24, 
+                    290, 
+                    364
+                ], 
+                [
+                    203, 
+                    90, 
+                    45, 
+                    45, 
+                    155, 
+                    295
+                ]
+            ], 
+            "file": "0000010200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000001800.png"
+        }, 
+        {
+            "locations": [
+                [
+                    159, 
+                    161, 
+                    40, 
+                    40, 
+                    117, 
+                    241
+                ]
+            ], 
+            "file": "0000025600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000023600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000004200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000019100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000035600.png"
+        }, 
+        {
+            "locations": [
+                [
+                    549, 
+                    105, 
+                    45, 
+                    45, 
+                    501, 
+                    641
+                ], 
+                [
+                    494, 
+                    27, 
+                    57, 
+                    57, 
+                    433, 
+                    611
+                ]
+            ], 
+            "file": "0000001000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000019000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    491, 
+                    103, 
+                    35, 
+                    35, 
+                    454, 
+                    562
+                ]
+            ], 
+            "file": "0000033000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000012600.png"
+        }, 
+        {
+            "locations": [
+                [
+                    177, 
+                    23, 
+                    26, 
+                    26, 
+                    150, 
+                    230
+                ]
+            ], 
+            "file": "0000002000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    328, 
+                    75, 
+                    44, 
+                    44, 
+                    282, 
+                    418
+                ]
+            ], 
+            "file": "0000006700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    65, 
+                    40, 
+                    26, 
+                    26, 
+                    38, 
+                    118
+                ]
+            ], 
+            "file": "0000032000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000002100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    57, 
+                    59, 
+                    36, 
+                    36, 
+                    19, 
+                    131
+                ]
+            ], 
+            "file": "0000022000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000031100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000034600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000035000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000018500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000010500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    270, 
+                    205, 
+                    50, 
+                    50, 
+                    217, 
+                    373
+                ]
+            ], 
+            "file": "0000034500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000016800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003900.png"
+        }, 
+        {
+            "locations": [
+                [
+                    404, 
+                    234, 
+                    63, 
+                    63, 
+                    337, 
+                    533
+                ]
+            ], 
+            "file": "0000028700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000031500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000005800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000002800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    255, 
+                    79, 
+                    53, 
+                    53, 
+                    199, 
+                    363
+                ], 
+                [
+                    201, 
+                    241, 
+                    50, 
+                    50, 
+                    148, 
+                    304
+                ]
+            ], 
+            "file": "0000021700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    149, 
+                    57, 
+                    37, 
+                    37, 
+                    110, 
+                    224
+                ]
+            ], 
+            "file": "0000032100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000027700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000026300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    440, 
+                    234, 
+                    69, 
+                    69, 
+                    367, 
+                    581
+                ]
+            ], 
+            "file": "0000032500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000020700.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000024500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000032600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000015500.png"
+        }, 
+        {
+            "locations": [
+                [
+                    509, 
+                    122, 
+                    54, 
+                    54, 
+                    452, 
+                    620
+                ]
+            ], 
+            "file": "0000001300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000013300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009800.png"
+        }, 
+        {
+            "locations": [
+                [
+                    506, 
+                    151, 
+                    43, 
+                    43, 
+                    460, 
+                    594
+                ], 
+                [
+                    270, 
+                    205, 
+                    50, 
+                    50, 
+                    217, 
+                    373
+                ]
+            ], 
+            "file": "0000026700.png"
+        }, 
+        {
+            "locations": [
+                [
+                    277, 
+                    21, 
+                    30, 
+                    30, 
+                    246, 
+                    338
+                ], 
+                [
+                    506, 
+                    155, 
+                    42, 
+                    42, 
+                    462, 
+                    592
+                ]
+            ], 
+            "file": "0000027300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000007200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    412, 
+                    74, 
+                    31, 
+                    31, 
+                    379, 
+                    475
+                ]
+            ], 
+            "file": "0000019400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    550, 
+                    115, 
+                    54, 
+                    54, 
+                    493, 
+                    661
+                ]
+            ], 
+            "file": "0000001100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003200.png"
+        }, 
+        {
+            "locations": [
+                [
+                    324, 
+                    35, 
+                    25, 
+                    25, 
+                    297, 
+                    375
+                ]
+            ], 
+            "file": "0000009400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000005200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000008400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    508, 
+                    155, 
+                    43, 
+                    43, 
+                    462, 
+                    596
+                ]
+            ], 
+            "file": "0000027100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000021800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000035500.png"
+        }, 
+        {
+            "locations": [
+                [
+                    296, 
+                    47, 
+                    29, 
+                    29, 
+                    265, 
+                    355
+                ]
+            ], 
+            "file": "0000010600.png"
+        }, 
+        {
+            "locations": [
+                [
+                    458, 
+                    142, 
+                    40, 
+                    40, 
+                    416, 
+                    540
+                ]
+            ], 
+            "file": "0000032300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000002400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000000400.png"
+        }, 
+        {
+            "locations": [
+                [
+                    91, 
+                    228, 
+                    50, 
+                    50, 
+                    38, 
+                    194
+                ], 
+                [
+                    100, 
+                    106, 
+                    44, 
+                    44, 
+                    54, 
+                    190
+                ], 
+                [
+                    305, 
+                    77, 
+                    50, 
+                    50, 
+                    252, 
+                    408
+                ], 
+                [
+                    142, 
+                    218, 
+                    59, 
+                    59, 
+                    79, 
+                    263
+                ], 
+                [
+                    96, 
+                    176, 
+                    52, 
+                    52, 
+                    41, 
+                    203
+                ]
+            ], 
+            "file": "0000005500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000003100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000011200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000021000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000034200.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000009900.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030300.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000001600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000030800.png"
+        }, 
+        {
+            "locations": [
+                [
+                    113, 
+                    55, 
+                    41, 
+                    41, 
+                    69, 
+                    197
+                ]
+            ], 
+            "file": "0000021400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000006000.png"
+        }, 
+        {
+            "locations": [
+                [
+                    373, 
+                    146, 
+                    44, 
+                    44, 
+                    327, 
+                    463
+                ]
+            ], 
+            "file": "0000019600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000033500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000006100.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000029600.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000023500.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000034400.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000031000.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000025800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000017300.png"
+        }, 
+        {
+            "locations": [
+                [
+                    93, 
+                    179, 
+                    25, 
+                    25, 
+                    66, 
+                    144
+                ]
+            ], 
+            "file": "0000031800.png"
+        }, 
+        {
+            "locations": [], 
+            "file": "0000022100.png"
+        }
+    ], 
+    "url": "data/captures/video3/", 
+    "canvas": [
+        640, 
+        360
+    ], 
+    "name": "data/captures/video3/", 
+    "ratios": {
+        "ratio": 0.8, 
+        "eHP": 16, 
+        "hP": 55, 
+        "tP": 15, 
+        "mP": 35, 
+        "eVP": 20
+    }
+}
