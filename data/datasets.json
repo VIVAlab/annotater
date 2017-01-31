@@ -1,12 +1,9 @@
 [   
     {"name": "Select Dataset", "url": ""},
-    {"name": "cam0", "url": "data/captures/cam0/data.json"},
-    {"name": "cam1", "url": "data/captures/cam1/data.json"},
-    {"name": "cam2", "url": "data/captures/cam2/data.json"},
-    {"name": "cam3", "url": "data/captures/cam3/data.json"},
-    {"name": "cam4", "url": "data/captures/cam4/data.json"},
-    {"name": "cam5", "url": "data/captures/cam5/data.json"},
-    {"name": "video1", "url": "data/captures/video1/data.json"},
-    {"name": "video2", "url": "data/captures/video2/data.json"},
-    {"name": "video3", "url": "data/captures/video3/data.json"}
+	{"name": "gestures 1", "url": "data/captures/gestures_vd1/data.json"},
+	{"name": "gestures 2", "url": "data/captures/gestures_vd2/data.json"},
+	{"name": "gestures 3", "url": "data/captures/gestures_vd3/data.json"},
+	{"name": "gestures 4", "url": "data/captures/gestures_vd4/data.json"},
+	{"name": "gestures 5", "url": "data/captures/gestures_vd5/data.json"},
+	{"name": "gestures 6", "url": "data/captures/gestures_vd6/data.json"}
 ]

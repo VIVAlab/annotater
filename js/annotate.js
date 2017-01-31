@@ -13,16 +13,16 @@ const State = {
 };
 
 var Ratios = {
-    ratio: .8,
-    tP: 15,
-    mP: 35,
-    hP: 55,
-    eVP: 20,
-    eHP: 16
+    ratio: .8, //.8
+    tP: 15, //15 
+    mP: 35, //35, 50(center)
+    hP: 55, //55
+    eVP: 20, //20
+    eHP: 16  //16
 };
 
-var defaultHeight  = 150;
-var defaultRatio = .8;
+var defaultHeight  = 150; //150
+var defaultRatio = .8
 var dataset       = {};
 var detections = [[]];
 var currentFrame = 0;
@@ -31,9 +31,33 @@ var ctx = null;
 var current = null;
 var img = null;
 
+var gesture_selected = 0;
+var gestures = ["Full hand", "1 Finger", "L pose", "Thumb out", 
+                "Fist", "4 Fingers", "4 Fingers together",
+                "4 Fingers together with thumb out", "Peace Sign", 
+                "2 Fingers and thumb", "Swipe left to right",
+                "Swipe right to left"];
+
+var ids_radio_buttons = ["#full_hand_rb", "#1_finger_rb", "#L_pose_rb", "#Thumb_out_rb", 
+                        "#Fist_rb", "#4_fingers_rb", "#4_fingers_together_rb",
+                        "#4_fingers_together_with_thumb_out_rb", "#Peace_Sign_rb", 
+                        "#2_fingers_and_thumb_rb", "#swipe_left_to_right_rb",
+                        "#swipe_right_to_left_rb"];
+
+var annotation_settings = {
+    type_annotation: "gestures",  //gestures, "people"
+    indicator_width: 100,
+    indicator_height: 100
+}
+
+
 function UpperBody(canvas, height, ratios, lX, rX) {
     var self = this;
     
+     ///// to set the selector square in shape
+    if(annotation_settings.type_annotation == "gestures")
+        ratios.mP = 50;
+
     self.x = 0;
     self.y = 0;
     self.ratio = ratios.ratio;
@@ -54,7 +78,8 @@ function UpperBody(canvas, height, ratios, lX, rX) {
     else
         self.rightX = rX;
     
-    
+   
+
     self.tP = ratios.tP;
     self.mP = ratios.mP;
     self.hP = ratios.hP;
@@ -137,24 +162,29 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         ctx.beginPath()
         //Big box
         
+       
+
         //Guide Line
         ty = self.y + (self.tP/100) * self.h;
         by = self.y + (self.hP/100) * self.h;    
         my = self.y + (self.mP/100) * self.h;
         mx = self.x + self.w / 2;    
 
-        //Ellipse
-        rY = (self.eHP/100) * self.h;
-        rX = (self.eVP/100) * self.h;
-        ctx.ellipse(mx, my, rX, rY , Math.PI / 2, 0, 2 * Math.PI);
-        
+        // draw ellipse only if user is annotation a body
+        if (annotation_settings.type_annotation !=  "gestures" )
+        {   //Ellipse
+            rY = (self.eHP/100) * self.h;
+            rX = (self.eVP/100) * self.h;
+            ctx.ellipse(mx, my, rX, rY , Math.PI / 2, 0, 2 * Math.PI);
+        }
+
+        //horizontal lines
         if (self.leftX != -1 && self.rightX != -1)
         {
         ctx.moveTo(self.leftX, self.y);
         ctx.lineTo(self.rightX, self.y);
         ctx.moveTo(self.leftX, self.y + self.h);
         ctx.lineTo(self.rightX, self.y + self.h);
-         
         }
         
         
@@ -162,7 +192,7 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         //Draw vertical lines
         if (self.leftX != -1)
         {
-            ctx.fillText(leftLabel, self.leftX, self.y );
+            ctx.fillText(leftLabel, self.leftX, self.y);
             ctx.moveTo(self.leftX, self.y);
             ctx.lineTo(self.leftX, self.y + self.h);
         }
@@ -180,14 +210,28 @@ function UpperBody(canvas, height, ratios, lX, rX) {
         ctx.beginPath()
         //Horizontal Middle Lines
         //Middle line
-        ctx.moveTo(mx, self.y);
-        ctx.lineTo(mx, self.y+self.h);
+
+         if (annotation_settings.type_annotation !=  "gestures" )
+         {
+            ctx.moveTo(mx, self.y);
+            ctx.lineTo(mx, self.y+self.h);
+            ctx.moveTo(self.x, my);
+            ctx.lineTo(self.x + self.w, my);
+         }
+         else // gestures
+         {
+             //cross
+             //vertical line
+            ctx.moveTo(mx, my - annotation_settings.indicator_height/2);
+            ctx.lineTo(mx, my + annotation_settings.indicator_height/2);
+            //horizontal line
+            ctx.moveTo(mx - annotation_settings.indicator_width/2, my);
+            ctx.lineTo(mx + annotation_settings.indicator_width/2, my);
+         }
         
-        ctx.moveTo(self.x, my);
-        ctx.lineTo(self.x + self.w, my);
+        
         
         //Shoulder lines 
-        
         if (self.state == State.LEFT)
         {
             ctx.fillText(leftLabel, self.leftX, self.y );
@@ -202,9 +246,7 @@ function UpperBody(canvas, height, ratios, lX, rX) {
             ctx.moveTo(self.rightX, self.y);
             ctx.lineTo(self.rightX, self.y + self.h);
         }
-        
-        
-       
+    
         ctx.stroke();
         ctx.restore();
     }
@@ -229,9 +271,8 @@ function updateCanvas(canvas, image, dets, current) {
     }
     ctx.strokeStyle = '#fff';
     current.draw(image);
-    
-    
-    
+
+    //check this line later
     $("#details").html(sprintf("Frame: $d / $d <span class='pull-right'>  $d detections</span>",currentFrame, dataset.frames.length - 1, total));
 }
 
@@ -277,7 +318,6 @@ function initializeDetections(data) {
             var detection = new UpperBody(canvas, height, Ratios, lx , rx)
             detection.setCenterFace(x + w/2 , y + h/2);
             
-            
             detections[index].push(detection);
         });
     });
@@ -289,14 +329,17 @@ function start()
 }
 
 $(document).ready(function(){ // When the DOM is Ready
+   
+   //change size indicator, square shape
+   if(annotation_settings.type_annotation ==  "gestures" ) {
+        defaultHeight = annotation_settings.indicator_height/1;  
+   }
+   
     canvas    = document.getElementById('canvas');
     ctx       = canvas.getContext('2d');
     current   = new UpperBody(canvas, defaultHeight, Ratios);
     img       = new Image;
-   
     ctx.strokeStyle = '#fff';
-    
-  
 
     $.getJSON(sprintf("./data/datasets.json?q=$f", Math.random()), function(data) 
     {
@@ -325,17 +368,23 @@ $(document).ready(function(){ // When the DOM is Ready
              current.mouseMove(x, y);
              updateCanvas(canvas, img, detections[currentFrame], current);
         });
+        
         canvas.addEventListener('click', function(e) 
         {
             current.stateUp();
        
             if ( current.state == State.DONE)
             {
+                
                 if (Array.isArray(detections[currentFrame]) && detections[currentFrame].length > 0)
                     detections[currentFrame].push(current);
                 else
                     detections[currentFrame] = [current];
                 current = new UpperBody(canvas, defaultHeight, Ratios);
+                
+                console.log("current frame " + currentFrame );
+                console.log("!!!!!!current:-->> " + detections[0]);
+                
             }
     
         });
@@ -435,6 +484,26 @@ $(document).ready(function(){ // When the DOM is Ready
                 detections[currentFrame] = [];
                 updateCanvas(canvas, img, detections[currentFrame], current);
             }
+
+             //select new gesture 'd' key
+            else if (event.keyCode == 68)
+            {
+               gesture_selected++; 
+               if(gesture_selected == gestures.length) 
+                    gesture_selected = 0;
+                $(ids_radio_buttons[gesture_selected]).click();
+                //console.log("gesture_selected " + gesture_selected + ": " + gestures[gesture_selected]);
+            }
+
+            //select previous gesture 'a' key
+            else if (event.keyCode == 65)
+            {
+               gesture_selected--; 
+               if(gesture_selected == -1) 
+                    gesture_selected = gestures.length-1;
+                $(ids_radio_buttons[gesture_selected]).click();
+                //console.log("gesture_selected " + gesture_selected + ": " + gestures[gesture_selected]);
+            }
         });
         
         $("#download").click(function(event)
@@ -456,12 +525,11 @@ $(document).ready(function(){ // When the DOM is Ready
 		    save($('#download'),data, filename);
 		    $('#canvas').focus();
 	    });
-	    
+       
 	    $('#upload').on('change', function(event) {
 			var file = event.target.files[0];
 			var textType = /json.*/;
 			var self = $(this);
-			
 			
 			if (file.type == "" || file.type.match(textType)) 
 			{
@@ -472,9 +540,9 @@ $(document).ready(function(){ // When the DOM is Ready
 				    
 				    
 					var newData = JSON.parse(reader.result);
-					var data = [   
+					
+                    var data = [   
                              {"name": newData.name, "url": newData.url},
-    
                     ];
                     
 					$('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${url}'});
@@ -490,8 +558,66 @@ $(document).ready(function(){ // When the DOM is Ready
 			{
 				alert("File not supported!");	
 			}
-	});
-	    
+         
+	}); //upload
 
-    });
+    // chooses type of gesture to be annotated in the image
+     $('input[type=radio][name=gesture_type]').change(function() {
+        //console.log("the value is: " + $(this).val());
+        
+        switch($(this).val()) {
+            case 'Full hand':
+                $('#show_gesture_type').html(gestures[0]);
+                break;
+            case '1 finger':
+                $('#show_gesture_type').html(gestures[1]);
+                //console.log("1 finger");
+                break;
+            case 'L pose':
+                $('#show_gesture_type').html(gestures[2]);
+                //console.log("L pose");
+                break;
+            case 'Thumb out':
+                $('#show_gesture_type').html(gestures[3]);
+                //console.log("Thumb out");
+                break;
+            case 'Fist':
+                $('#show_gesture_type').html(gestures[4]);
+                //console.log("Fist");
+                break;
+            case '4 fingers':
+                $('#show_gesture_type').html(gestures[5]);
+                //console.log("4 fingers");
+                break;
+            case '4 fingers together':
+                $('#show_gesture_type').html(gestures[6]);
+                //console.log("4 fingers together");
+                break;
+            case '4 fingers together with thumb out':
+                $('#show_gesture_type').html(gestures[7]);
+                //console.log("4 fingers together with thumb out");
+                break;
+            case 'Peace Sign':
+                $('#show_gesture_type').html(gestures[8]);
+                //console.log("Peace Sign");
+                break;
+            case '2 fingers and thumb':
+                $('#show_gesture_type').html(gestures[9]);
+                //console.log("2 fingers and thumb");
+                break;
+             case 'swipe left to right':
+                $('#show_gesture_type').html(gestures[10]);
+                //console.log("swipe left to right");
+                break;
+            case 'swipe right to left':
+                $('#show_gesture_type').html(gestures[11]);
+                //console.log("swipe right to left");
+                break;
+            default:
+                //console.log("default"); 
+        }
+     });
+
+    });// getJSON
+
 });//ready
