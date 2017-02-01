@@ -567,50 +567,50 @@ $(document).ready(function(){ // When the DOM is Ready
         
         switch($(this).val()) {
             case 'Full hand':
-                $('#show_gesture_type').html(gestures[0]);
+                $('#show-label-type').html(gestures[0]);
                 break;
             case '1 finger':
-                $('#show_gesture_type').html(gestures[1]);
+                $('#show-label-type').html(gestures[1]);
                 //console.log("1 finger");
                 break;
             case 'L pose':
-                $('#show_gesture_type').html(gestures[2]);
+                $('#show-label-type').html(gestures[2]);
                 //console.log("L pose");
                 break;
             case 'Thumb out':
-                $('#show_gesture_type').html(gestures[3]);
+                $('#show-label-type').html(gestures[3]);
                 //console.log("Thumb out");
                 break;
             case 'Fist':
-                $('#show_gesture_type').html(gestures[4]);
+                $('#show-label-type').html(gestures[4]);
                 //console.log("Fist");
                 break;
             case '4 fingers':
-                $('#show_gesture_type').html(gestures[5]);
+                $('#show-label-type').html(gestures[5]);
                 //console.log("4 fingers");
                 break;
             case '4 fingers together':
-                $('#show_gesture_type').html(gestures[6]);
+                $('#show-label-type').html(gestures[6]);
                 //console.log("4 fingers together");
                 break;
             case '4 fingers together with thumb out':
-                $('#show_gesture_type').html(gestures[7]);
+                $('#show-label-type').html(gestures[7]);
                 //console.log("4 fingers together with thumb out");
                 break;
             case 'Peace Sign':
-                $('#show_gesture_type').html(gestures[8]);
+                $('#show-label-type').html(gestures[8]);
                 //console.log("Peace Sign");
                 break;
             case '2 fingers and thumb':
-                $('#show_gesture_type').html(gestures[9]);
+                $('#show-label-type').html(gestures[9]);
                 //console.log("2 fingers and thumb");
                 break;
              case 'swipe left to right':
-                $('#show_gesture_type').html(gestures[10]);
+                $('#show-label-type').html(gestures[10]);
                 //console.log("swipe left to right");
                 break;
             case 'swipe right to left':
-                $('#show_gesture_type').html(gestures[11]);
+                $('#show-label-type').html(gestures[11]);
                 //console.log("swipe right to left");
                 break;
             default:
