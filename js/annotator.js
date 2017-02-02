@@ -7,21 +7,24 @@ var frameIndex       = 0;
 var bBox;
 var setLoaded        = false;
 var labelSelected;
+var objectSelected;
 var colorBoundingBox = 'red';
 var labelFont        = '14px Arial';
 var spaceLabel       =  5; //number of pixels between text and bounding box
-var key              =  {'a': 65, 'd' : 68, 'p' : 80, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85};
+var key              =  {'a': 65, 'c' : 67, 'd' : 68, 'p' : 80, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85};
+var settings         = null;   
 
 /**
  * object that contains info for mouse
  * interaction to create bounding boxes.
  */
 function stateBBox(){
-  this.nClicks      =  0;               // number of clicks
-  this.coordinates  =  [0, 0, 0, 0];    // coordinates of the bounding box: x, y, width, height
-  this.mx           =  0;               // mouse coordinates
-  this.my           =  0;
-  this.label        =  'default';
+  this.nClicks        =  0;               // number of clicks
+  this.coordinates    =  [0, 0, 0, 0];    // coordinates of the bounding box: x, y, width, height
+  this.mx             =  0;               // mouse coordinates
+  this.my             =  0;
+  this.label          =  'default';
+  this.annotationType =  'default';
   this.click = function (){             // update states according to the number of clicks
     this.nClicks +=1;
     if(this.nClicks === 1){
@@ -43,8 +46,8 @@ function stateBBox(){
  * inform users about #frames in the DB, in which he is and the number of bounding boxes in the current frame 
  */
 function informUser(){
-  var nRec = dataset.frames[frameIndex].locations.length; // get # of bounding boxes current image
-  $("#details").html(sprintf("Frame: $d / $d <span class='pull-right'>  $d detections</span>",frameIndex, dataset.frames.length - 1, nRec));
+  var nRec = dataset.frames[frameIndex].annotations.length; // get # of bounding boxes current image
+  $("#details").html(sprintf("Frame: $d / $d <span class='pull-right'>  $d annotations</span>",frameIndex+1, dataset.frames.length, nRec));
 } // end informUser
 
 
@@ -54,7 +57,6 @@ function informUser(){
 function displayImage(){
   //get frame which index is indexFrame 
   image.src =  dataset.url + dataset.frames[frameIndex].file;
-  
   image.onload = function(){
     context.drawImage(image, 0, 0);
     drawBoundingBox();
@@ -67,9 +69,9 @@ function displayImage(){
  * Set image index and selected label to their default values 
  */
 function initializeIndexImageSet(){
-  frameIndex = 0;
-  labelSelected = 0;
-  $('#show-label-type').html(dataset.labels[labelSelected]);
+  frameIndex     = 0;
+  labelSelected  = 0;
+  objectSelected = 0;
 } // end initializeIndexImageSet
 
 
@@ -88,7 +90,7 @@ function initializeImgDataset(data){
   document.getElementById('canvas').setAttribute('height', canvas.height);
   displayImage();
   setLoaded = true;
-  $('#show-label-type').html("Label (" + (1) + "/" + dataset.labels.length + "): " + dataset.labels[0]);
+  //$('#show-label-type').html("Label (" + (1) + "/" + dataset.labels.length + "): " + dataset.labels[0]);
 } // end initializeImgDataset
 
 
@@ -114,13 +116,14 @@ function loadImagesInformation(){
  */
 function pushNewBoundingBox(bb){
   
-  var oneAnnotation = { 'x'      :  bb.coordinates[0],
-                        'y'      :  bb.coordinates[1],
-                        'width'  :  bb.coordinates[2], 
-                        'height' :  bb.coordinates[3],
-                        'label'  :  bb.label
+  var oneAnnotation = { 'type'           :   bb.annotationType,
+                        'label'          :   bb.label,
+                        'x'              :   bb.coordinates[0],
+                        'y'              :   bb.coordinates[1],
+                        'width'          :   bb.coordinates[2], 
+                        'height'         :   bb.coordinates[3]
                       };
-  dataset.frames[frameIndex].locations.push(oneAnnotation); 
+  dataset.frames[frameIndex].annotations.push(oneAnnotation); 
 } // end pushNewBoundingBox
 
 
@@ -135,16 +138,16 @@ function getAndPrintAllBoxesForCurrentImage(){
   //draw previous bounding boxes if any
   try {
     if (typeof dataset.frames[frameIndex] !== "undefined") {
-      var nRec = dataset.frames[frameIndex].locations.length;
+      var nRec = dataset.frames[frameIndex].annotations.length;
       for(var i = 0; i< nRec; i++ ){
-        context.rect(dataset.frames[frameIndex].locations[i].x,
-                    dataset.frames[frameIndex].locations[i].y,
-                    dataset.frames[frameIndex].locations[i].width,
-                    dataset.frames[frameIndex].locations[i].height);
+        context.rect(dataset.frames[frameIndex].annotations[i].x,
+                    dataset.frames[frameIndex].annotations[i].y,
+                    dataset.frames[frameIndex].annotations[i].width,
+                    dataset.frames[frameIndex].annotations[i].height);
          
-        context.fillText(dataset.frames[frameIndex].locations[i].label, 
-                         dataset.frames[frameIndex].locations[i].x, 
-                         dataset.frames[frameIndex].locations[i].y - spaceLabel
+        context.fillText(dataset.frames[frameIndex].annotations[i].label, 
+                         dataset.frames[frameIndex].annotations[i].x, 
+                         dataset.frames[frameIndex].annotations[i].y - spaceLabel
                          );
       }
     }
@@ -183,17 +186,19 @@ function drawBoundingBox(x, y){
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
     context.rect(bBox.coordinates[0], bBox.coordinates[1], bBox.coordinates[2], bBox.coordinates[3]);
    
-    var label = dataset.labels[labelSelected];
+    //var label = dataset.labels[labelSelected];
+    var label = settings[objectSelected].labels[labelSelected];
+    var annot = settings[objectSelected].type;
     bBox.label = label;
+    bBox.annotationType = annot;
+
     // new bounding box
     pushNewBoundingBox(bBox);
     informUser();
 
     context.font = labelFont;
     context.fillStyle = colorBoundingBox;
-   
     context.fillText(label, bBox.coordinates[0], bBox.coordinates[1]-spaceLabel);
-
     bBox.reset(); // original state: no points have been selected
   }
 
@@ -232,8 +237,9 @@ function addListenersToDocument(){
     if(!setLoaded)
     return;
 
-    //space, next frame
-    if (event.keyCode == key['space'] || event.keyCode == key['right'])
+    //right key, next frame
+    //if (event.keyCode == key['space'] || event.keyCode == key['right'])
+    if (event.keyCode == key['right'])
     {
       if (frameIndex < dataset.frames.length - 1)
       {
@@ -241,8 +247,9 @@ function addListenersToDocument(){
           displayImage();
       }
     }
-    //'p' key , previous frame
-    else if (event.keyCode == key['p'] || event.keyCode == key['left'])
+    // previous frame
+    //else if (event.keyCode == key['p'] || event.keyCode == key['left'])
+    else if (event.keyCode == key['left'])
     {
       if (frameIndex > 0)
       {
@@ -255,25 +262,38 @@ function addListenersToDocument(){
     else if (event.keyCode == key['d'])
     {
       labelSelected++;
-      if(labelSelected === dataset.labels.length) 
+      if(labelSelected === settings[objectSelected].labels.length) 
          labelSelected = 0; 
-      $('#show-label-type').html("Label (" + (labelSelected+1) + "/" + dataset.labels.length + "): " + dataset.labels[labelSelected]); 
+
+      $("#select_label_type").val(settings[objectSelected].labels[labelSelected]);
     }
 
     // select previous label 'a'
     else if (event.keyCode == key['a'])
     {
       labelSelected--; 
+      
       if(labelSelected === -1) 
-         labelSelected = dataset.labels.length-1;
-      $('#show-label-type').html("Label (" + (labelSelected+1) + "/" + dataset.labels.length + "): " + dataset.labels[labelSelected]); 
+         labelSelected =  settings[objectSelected].labels.length-1;
+
+      $("#select_label_type").val(settings[objectSelected].labels[labelSelected]);
     }
 
-    // select delete last annotation 'u'
-    else if (event.keyCode == key['u'])
+    // delete last annotation 'u'
+    else if (event.keyCode === key['u'])
     {
       // delete last bounding box
-      dataset.frames[frameIndex].locations.pop(); 
+      dataset.frames[frameIndex].annotations.pop(); 
+      context.drawImage(image, 0, 0, canvas.width, canvas.height); // refresh image
+      getAndPrintAllBoxesForCurrentImage();
+      informUser();
+    }
+
+    // remove all annotations for current frame 'c'
+    else if (event.keyCode === key['c'])
+    {
+      // delete all bounding boxs for current frame
+      dataset.frames[frameIndex].annotations = []; 
       context.drawImage(image, 0, 0, canvas.width, canvas.height); // refresh image
       getAndPrintAllBoxesForCurrentImage();
       informUser();
@@ -347,12 +367,49 @@ function addListenerToUploadData(){
  */
 function loadDatasetsInfo(){
   // read json file  
-  $.getJSON(sprintf("./data/datasets.json?q=$f", Math.random()), function(data) 
-  {
+  $.getJSON(sprintf("./config/datasets.json?q=$f", Math.random()), function(data) 
+  { 
     $('#select').json2html(data, {'<>':'option','html':'${name}', 'value':'${url}'});
   });
 }// end loadDatasetsInfo
 
+
+/**
+ * Load settings 
+ */
+function setSettings(){
+  var configData;
+  // read json file  
+  $.getJSON(sprintf("./config/config.json?q=$f", Math.random()), function(configData) 
+  {
+    settings = configData;
+    $('#select_annotation_type').json2html(settings, {'<>':'option','html':'${type}', 'value':'${type}'});
+    // the first time, get the labels for the first type of object
+    $('#select_label_type').json2html(settings[0].labels, {'<>':'option','html': '$', 'value':'$'});
+  });
+}
+
+
+/**
+ * Manage the changes in the drop down list that allow us to 
+ * select a type of annotation and a label
+ */
+function annotationTypeAndLabels(){
+  //changes in the list of labels for a particular annotation type
+   $('#select_label_type').change( function () {
+     var index = $("#select_label_type option:selected").index();
+     labelSelected = index;
+  });
+
+  // changes in the list of annotation types
+  $('#select_annotation_type').change( function () {
+     var index = $("#select_annotation_type option:selected").index();
+     objectSelected = index;
+     labelSelected  = 0;
+     $('#select_label_type').html(""); //clear drop down list
+     $('#select_label_type').json2html(settings[index].labels, {'<>':'option','html': '$', 'value':'$'});
+  });
+}// end annotationTypeAndLabels
 
 /**
  * waits until the HTML is finished loading and then it runs the script
@@ -362,19 +419,27 @@ $(document).ready(function(){
   canvas    = document.getElementById('canvas');  // select canvas element
   context   = canvas.getContext('2d');            // select context
   image = new Image();
-  bBox  = new stateBBox();                        // to track the mouse status when creating a bounding box
+  bBox  = new stateBBox();                        // to track the mouse status to create a bounding box
   setLoaded = false;                              // flag indicating if the image set has been uploaded
+   
+  // set settings for the annotation task
+  setSettings(); 
 
   // load datasets names and populate the drop-down list
   loadDatasetsInfo();
   // allow user to choose a dataset and load images
   loadImagesInformation();
 
+  // select annotation type and set of labels.
+  annotationTypeAndLabels(); 
+
   // add listener for keyboard, upload and download files
   addListenersToDocument();
   addListenerToCanvas();
   addListenerToDownloadData();
   addListenerToUploadData();
+
+
 
 }); // end ready function
    

@@ -1,0 +1,26 @@
+[
+  { 
+    "type"   : "gestures",
+	  "labels" : 
+	  [ 
+	    "full hand", 
+	    "1 Finger", 
+	    "L pose", 
+	    "thumb out", 
+	    "fist", 
+	    "4 fingers",
+	    "4 fingers together", 
+	    "4 fingers together with thumb out", 
+	    "peace Sign", 
+	    "2 fingers and thumb"
+	  ]
+  },
+	{ 
+    "type"   : "person",
+	  "labels" : 
+	  [ 
+	    "head", 
+	    "torso"
+	  ]
+  }
+]        

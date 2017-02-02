@@ -1,0 +1,8 @@
+2/2/2017 PATCH NOTES
+- Ability to define bounding boxes by selecting two points.
+- Ability to define object types and labels using a JSON file (configuration file).
+- Ability to assign object types and labels to bounding boxes.
+- A config directory was added. The directory contains the configuration file and a second file 
+  with the list of datasets.
+- The folder2json.py script was updated to produce JSON files according to new specifications of the tool.
+- The python script: vidoe2files.py was updated to support the rotation operation.
