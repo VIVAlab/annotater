@@ -1,6 +1,7 @@
 [
   { 
-    "type"   : "gestures",
+    "type"      : "gestures",
+		"multipart" : "false",
 	  "labels" : 
 	  [ 
 	    "full hand", 
@@ -16,7 +17,8 @@
 	  ]
   },
 	{ 
-    "type"   : "person",
+    "type"      : "person",
+		"multipart" : "true",
 	  "labels" : 
 	  [ 
 	    "head", 
