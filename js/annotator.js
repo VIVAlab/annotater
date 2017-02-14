@@ -11,14 +11,19 @@ var objectSelected;
 var colorBoundingBox = 'red';
 var labelFont        = '14px Arial';
 var spaceLabel       =  5; //number of pixels between text and bounding box
-var key              =  {'a': 65, 'c' : 67, 'd' : 68, 'p' : 80, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85};
-var messages         =  {'hideAll' : 0, 'closeFirst': 1, 'multipart': 2, 'finish': 3};
+var key              =  {'a': 65, 'c' : 67, 'd' : 68, 'p' : 80, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85, 'up' : 38, 'down' : 40, 'w' : 87, 'x' : 88, 'enter' : 13};
+var messages         =  {'hideAll' : 0, 'closeFirst': 1, 'multipart': 2, 'finish': 3, 'success':4 };
 var settings         = null;
 var multipart        = false;
 var startMultiPart   = false;
 var multiPartAnnotation = null;
 var multipartObjectIndex = 0;
+var shiftKeyDown = false;
+var delta = 2;      // translation in x and y
+var current_part = -1
+var current_annotation = -1; 
 
+ 
 
 /**
  * object that contains info for mouse
@@ -58,22 +63,41 @@ function informUser(){
 
 
 /**
+ * 
+ */
+function showMessage(message) {
+  showHideAlerts(messages["hideAll"]);
+  $('#alert_part').hide();
+  $('#msg').html("<div class='alert alert-info' id ='alert_part' role='alert' style= 'display:display' >"+ "Annotating: " + message +"</div>");
+}
+
+
+/**
  * inform user about the annotation task 
  */
 function showHideAlerts(opt){
   if(opt == messages["hideAll"]){
-    $('#alert_close_annotation').attr("style", "display:none");
-    $('#alert_multipart').attr("style", "display:none");
-    $('#alert_finish').attr("style", "display:none");
+    $('#alert_close_annotation').hide();
+    $('#alert_multipart').hide();
+    $('#alert_finish').hide();
+    $('#alert_success').hide();
+     $('#alert_part').show();
   }
   else if(opt === messages['closeFirst']){
-    $('#alert_close_annotation').attr("style", "display:display");    
+    $('#alert_part').hide();
+    $('#alert_close_annotation').show();    
   }
   else if(opt === messages['multipart']){
-    $('#alert_multipart').attr("style", "display:display");    
+    $('#alert_part').hide();
+    $('#alert_multipart').show();    
   }
   else if(opt === messages['finish']){
-    $('#alert_finish').attr("style", "display:display");    
+    $('#alert_part').hide();
+    $('#alert_finish').show();    
+  }
+  else if(opt === messages['success']){
+    $('#alert_part').hide();
+    $('#alert_success').show();
   }
 }// end showHideAlerts
 
@@ -100,6 +124,8 @@ function initializeIndexImageSet(){
   labelSelected  = 0;
   objectSelected = 0;
   startMultiPart = false;
+  current_part = -1;
+  current_annotation = -1;
   showHideAlerts(messages['hideAll']);  
 } // end initializeIndexImageSet
 
@@ -156,11 +182,17 @@ function pushNewBoundingBox(bb){
     var setOfParts = { 'parts' : [] };
     setOfParts.parts.push(oneAnnotation);
     dataset.frames[frameIndex].annotations.push(setOfParts);
+    current_part = 0
+    current_annotation = dataset.frames[frameIndex].annotations.length -1;
   } 
   // it is a multipart object so, all the rois are stored in an array of parts
   else if(multipart && startMultiPart){
      dataset.frames[frameIndex].annotations[multipartObjectIndex].parts.push(oneAnnotation);
+     current_part = dataset.frames[frameIndex].annotations[multipartObjectIndex].parts.length -1;
+     current_annotation = multipartObjectIndex;
   }
+
+  
 } // end pushNewBoundingBox
 
 
@@ -222,6 +254,8 @@ function drawBoundingBox(x, y){
     context.drawImage(image, 0, 0, canvas.width, canvas.height); // refresh image
     getAndPrintAllBoxesForCurrentImage();
     context.rect(bBox.coordinates[0], bBox.coordinates[1], widthBB, heightBB);
+
+    showHideAlerts(messages['hideAll']);
   }
   // draw full bounding box because user has selected the second point
   else if(bBox.nClicks === 2){
@@ -239,6 +273,9 @@ function drawBoundingBox(x, y){
     // new bounding box
     pushNewBoundingBox(bBox);
     informUser();
+    
+    if(!multipart)
+      showHideAlerts(messages['success']);
 
     context.font = labelFont;
     context.fillStyle = colorBoundingBox;
@@ -272,6 +309,44 @@ function addListenerToCanvas(){
 } // end addListenerToCanvas
 
 
+/***
+ * 
+*/
+function refreshImage()
+{
+  context.drawImage(image, 0, 0, canvas.width, canvas.height); // refresh image
+  getAndPrintAllBoxesForCurrentImage();
+  informUser();
+}
+
+
+/***
+ * 
+ */
+function  getLastAnnotationIndices()
+{    
+    // the annotations array always exists, but it can be empty
+    var num_annotations = dataset.frames[frameIndex].annotations.length;
+    var num_parts = -1;
+
+    if(num_annotations > 0)
+    {
+      current_annotation  = num_annotations - 1;
+      num_parts = dataset.frames[frameIndex].annotations[current_annotation].parts.length;
+      
+      if(num_parts > 0)
+        current_part = num_parts -1; 
+      else
+        current_part = -1;
+    }
+    else
+    {
+       current_annotation = -1;
+       current_part = -1;
+    }   
+}
+
+
 /**
  * to get pressed keys
  */
@@ -280,10 +355,17 @@ function addListenersToDocument(){
   {
     if(!setLoaded)
     return;
-
+    
+    if (event.shiftKey) {
+      shiftKeyDown = true;
+     } 
+     else {
+      shiftKeyDown = false;
+     }
+    
     //right key, next frame
     //if (event.keyCode == key['space'] || event.keyCode == key['right'])
-    if (event.keyCode == key['right'])
+    if ((!shiftKeyDown && event.keyCode == key['right']) || (event.keyCode == key['space']) )
     {
       // it is a multipart object and need to be closed before moving
       if(startMultiPart)
@@ -296,11 +378,13 @@ function addListenersToDocument(){
       {
           frameIndex++;
           displayImage();
+          getLastAnnotationIndices();  
       }
+     
     }
     // previous frame
     //else if (event.keyCode == key['p'] || event.keyCode == key['left'])
-    else if (event.keyCode == key['left'])
+    else if ((!shiftKeyDown && event.keyCode == key['left']) || (event.keyCode == key['p']))
     {
       // it is a multipart object and need to be closed before moving
       if(startMultiPart)
@@ -311,9 +395,11 @@ function addListenersToDocument(){
 
       if (frameIndex > 0)
       {
-        frameIndex--;
-        displayImage();              
+          frameIndex--;
+          displayImage();              
+          getLastAnnotationIndices(); 
       }
+
     }
 
     //select new label 'd' key
@@ -324,6 +410,7 @@ function addListenersToDocument(){
          labelSelected = 0; 
 
       $("#select_label_type").val(settings[objectSelected].labels[labelSelected]);
+      showMessage(settings[objectSelected].labels[labelSelected]);
     }
 
     // select previous label 'a'
@@ -335,21 +422,29 @@ function addListenersToDocument(){
          labelSelected =  settings[objectSelected].labels.length-1;
 
       $("#select_label_type").val(settings[objectSelected].labels[labelSelected]);
+      showMessage(settings[objectSelected].labels[labelSelected]);
     }
 
     // delete last annotation 'u'
     else if (event.keyCode === key['u'])
     {
-      // if is not a multipart object, remove the whole parts JSON object 
-      if(!multipart)
-        dataset.frames[frameIndex].annotations.pop();
-      else { // remove the last part of the parts JSON object
-        //if(dataset.frames[frameIndex].annotations)
-        dataset.frames[frameIndex].annotations[multipartObjectIndex].parts.pop();
-      }
-      context.drawImage(image, 0, 0, canvas.width, canvas.height); // refresh image
-      getAndPrintAllBoxesForCurrentImage();
-      informUser();
+       // it removes an whole set of parts for multipart objects
+       // or only one part for single part objects
+       dataset.frames[frameIndex].annotations.pop();
+
+      // // if is not a multipart object, remove the whole parts JSON object 
+      // if(!multipart){
+      //   dataset.frames[frameIndex].annotations.pop();
+      // }
+      // else { // remove the last part of the parts JSON object
+        
+      //   if(dataset.frames[frameIndex].annotations.length > 0)
+      //     dataset.frames[frameIndex].annotations[multipartObjectIndex].parts.pop();
+      //   else
+      //     dataset.frames[frameIndex].annotations.pop();
+      // }
+      getLastAnnotationIndices();
+      refreshImage();
     }
 
     // remove all annotations for current frame 'c'
@@ -357,10 +452,93 @@ function addListenersToDocument(){
     {
       // delete all bounding boxs for current frame
       dataset.frames[frameIndex].annotations = []; 
-      context.drawImage(image, 0, 0, canvas.width, canvas.height); // refresh image
-      getAndPrintAllBoxesForCurrentImage();
-      informUser();
+      getLastAnnotationIndices();
+      refreshImage();
     }
+    
+    else if(shiftKeyDown && event.keyCode === key['right']){
+       getLastAnnotationIndices();
+       if(current_annotation == -1)
+         return;
+
+       if(dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x + delta + 
+          dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].width < canvas.width )
+       {
+         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x += delta;
+         refreshImage();
+       }
+    }
+
+    else if(shiftKeyDown && event.keyCode === key['left']){
+      getLastAnnotationIndices();
+      if(current_annotation == -1)
+        return;
+
+      if(dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x - delta > 0){
+        dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x -= delta;
+        refreshImage();
+      
+      }
+    }
+    
+    else if(shiftKeyDown && event.keyCode === key['up']){
+      getLastAnnotationIndices();
+      if(current_annotation == -1)
+        return;
+
+      if(dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y - delta > 0){
+        dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y -= delta;
+        refreshImage();
+      }
+    }
+
+    else if(shiftKeyDown && event.keyCode === key['down']){
+       getLastAnnotationIndices();
+       if(current_annotation == -1)
+         return;
+
+       if(dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y + delta + 
+          dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].height < canvas.height )
+       {
+         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y += delta;
+         refreshImage();
+       }
+    }
+    // expand BoundingBox
+    else if(event.keyCode === key['w']){
+       
+       getLastAnnotationIndices();
+       if(current_annotation == -1)
+         return;
+       if((dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y - delta > 0) &&
+          (dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x - delta > 0) &&
+          (dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y + delta + 
+          dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].height < canvas.height ) &&
+          (dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x + delta + 
+          dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].width < canvas.width )
+         )
+       {
+         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x -= delta/2;
+         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y -= delta/2;
+         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].width += delta;
+         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].height += delta;
+         refreshImage();
+       }
+    }
+     // reduce BoundingBox
+    else if(event.keyCode === key['x'])
+    {   
+          if((dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].height > delta *2  ) &&
+             (dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].width  > delta *2 ) )
+         {
+            dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x += delta;
+            dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y += delta;
+            dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].width -= 2*delta;
+            dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].height -= 2*delta;
+            refreshImage();
+         }
+    }
+    //console.log(event.keyCode);
   });
 } // end addListenersToDocument
 
@@ -485,6 +663,8 @@ function setSettings(){
     $('#select_annotation_type').json2html(settings, {'<>':'option','html':'${type}', 'value':'${type}'});
     // the first time, get the labels for the first type of object
     $('#select_label_type').json2html(settings[0].labels, {'<>':'option','html': '$', 'value':'$'});
+    
+    showMessage(settings[0].labels[0]);
   });
 } // end load settings
 
@@ -498,6 +678,7 @@ function annotationTypeAndLabels(){
    $('#select_label_type').change( function () {
      var index = $("#select_label_type option:selected").index();
      labelSelected = index;
+     showMessage(settings[objectSelected].labels[labelSelected]);
   });
 
   // changes in the list of annotation types
@@ -516,6 +697,7 @@ function annotationTypeAndLabels(){
      $('#select_label_type').html(""); //clear drop down list
      $('#select_label_type').json2html(settings[index].labels, {'<>':'option','html': '$', 'value':'$'});
      showHideAlerts(messages['hideAll']);
+     showMessage(settings[index].labels[0]);
   });
 }// end annotationTypeAndLabels
 

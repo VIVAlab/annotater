@@ -1,4 +1,9 @@
 data/captures/
-camera.py
 videos/
 *.bat
+.vscode/
+.vscode/settings.json
+camera.py
+classify_images.py
+commands.txt
+get_video_names.py

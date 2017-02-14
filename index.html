@@ -22,7 +22,7 @@
   <script src="js/jquery.json2html.js"></script>
 
   <!--<script src="js/annotate.js?v=11"></script>   annotate is the last stable version-->
-  <script src="js/annotator.js?v=18"></script>
+  <script src="js/annotator.js?v=28"></script>
   <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
   <!-- <link   href="css/annotate.css"rel="stylesheet" type="text/css" > -->
   <link href="css/starter-template.css" rel="stylesheet">
@@ -52,11 +52,13 @@
       <!--/.nav-collapse -->
     </div>
   </nav>
-
+  <div id="msg">
+      <div class="alert alert-info" id = "alert_part" role="alert" style=" display:display">Annotating: </div>
+  </div>    
+  <div class="alert alert-success"  id = "alert_success"    role="alert" style=" display:none">You have successfully created an annotation</div>
   <div class="alert alert-danger"   id = "alert_close_annotation"   role="alert" style = "display:none">Click red button to change frame</div>
-  <div class="alert alert-info"     id = "alert_multipart" role="alert" style=" display:none">Click green button to start multipart annotation</div>
+  <div class="alert alert-info"     id = "alert_multipart" role="alert" style=" display:none">Click green button to start a multipart annotation</div>
   <div class="alert alert-info"     id = "alert_finish"    role="alert" style=" display:none">Click red button to finish multipart annotation </div>
-
   <div class="container">
     <div class="starter-template">
       <h1>Annotate</h1>

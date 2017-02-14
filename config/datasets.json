@@ -1,9 +1,4 @@
 [   
     {"name": "Select Dataset", "url": ""},
-	{"name": "gestures 1", "url": "data/captures/gestures_vd1/data.json"},
-	{"name": "gestures 2", "url": "data/captures/gestures_vd2/data.json"},
-	{"name": "gestures 3", "url": "data/captures/gestures_vd3/data.json"},
-	{"name": "gestures 4", "url": "data/captures/gestures_vd4/data.json"},
-	{"name": "gestures 5", "url": "data/captures/gestures_vd5/data.json"},
-	{"name": "gestures 6", "url": "data/captures/gestures_vd6/data.json"}
+    {"name": "group 2", "url": "data/captures/group2/data.json"}
 ]
