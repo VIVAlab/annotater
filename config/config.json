@@ -1,6 +1,28 @@
 [
+   { 
+    "type" : "gestures group 1",
+	"multipart" : "false",
+	"labels" : 
+	 [ 
+	    "full hand",
+      "thumb out",  
+	    "fist",
+      "hand"
+	]
+  },
   { 
-    "type"      : "gestures",
+    "type" : "gestures group 2",
+	  "multipart" : "false",
+	  "labels" : 
+	 [ 
+	    "L pose",
+      "4 fingers together with thumb out",  
+	    "2 fingers and thumb",
+      "hand"
+	]
+  },
+	{ 
+    "type"      : "gestures all groups",
 		"multipart" : "false",
 	  "labels" : 
 	  [ 

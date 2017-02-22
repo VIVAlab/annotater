@@ -1,4 +1,5 @@
 [   
     {"name": "Select Dataset", "url": ""},
-    {"name": "group 2", "url": "data/captures/group2/data.json"}
+    {"name": "gestures group 1", "url": "data/captures/group1/data.json"},
+    {"name": "gestures group 2", "url": "data/captures/group2/data.json"}
 ]
