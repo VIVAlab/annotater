@@ -21,6 +21,18 @@
       "hand"
 	]
   },
+  { 
+  	"type" : "gestures group 3",
+		"multipart" : "false",
+		"labels" : 
+	 [ 
+		 "Peace sign",
+		 "4 fingers together",  
+		 "1 finger",
+		 "4 fingers open",
+    "hand"
+	 ]
+  },
 	{ 
     "type"      : "gestures all groups",
 		"multipart" : "false",
@@ -44,7 +56,11 @@
 	  "labels" : 
 	  [ 
 	    "head", 
-	    "torso"
+	    "torso",
+			"left arm",
+			"right arm",
+			"left hand",
+			"right hand"
 	  ]
   }
 ]        

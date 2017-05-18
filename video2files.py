@@ -54,6 +54,9 @@ while(True):
         M = cv2.getRotationMatrix2D((cols/2,rows/2),args.rotate,1)
         dst = cv2.warpAffine(frame, M, (cols,rows))
         frame = dst
+    
+    # flipped
+    #cv2.flip(frame, 1, frame);    
 
     cv2.imwrite(join(args.folder,'%010d.png' % (number)), frame)
     number+=1

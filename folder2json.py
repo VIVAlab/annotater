@@ -53,7 +53,7 @@ for k, folder in enumerate(args.folders):
         
         dataset['frames'].append({'file':file, 'annotations':annotations})
     
-    shuffle(dataset['frames'])
+    #shuffle(dataset['frames'])
     
     with open(join(folder, args.output), 'w') as f:
         f.write(json.dumps(dataset, sort_keys=True, indent=4, separators=(',', ': ')))

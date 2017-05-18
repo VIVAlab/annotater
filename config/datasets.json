@@ -1,5 +1,13 @@
 [   
     {"name": "Select Dataset", "url": ""},
+	{"name": "video 1", "url": "data/captures/video_1/data.json"},
+	{"name": "video 2", "url": "data/captures/video_2/data.json"},
+	{"name": "video 3", "url": "data/captures/video_3/data.json"},
+	{"name": "video 4", "url": "data/captures/video_4/data.json"},
+	{"name": "video 5", "url": "data/captures/video_5/data.json"},
+	{"name": "video 6", "url": "data/captures/video_6/data.json"},
+	{"name": "video 7-20", "url": "data/captures/video_7-20/data.json"},
     {"name": "gestures group 1", "url": "data/captures/group1/data.json"},
-    {"name": "gestures group 2", "url": "data/captures/group2/data.json"}
+    {"name": "gestures group 2", "url": "data/captures/group2/data.json"},
+	{"name": "feb 28", "url": "data/captures/imgFeb28/data.json"}
 ]
