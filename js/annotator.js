@@ -11,7 +11,7 @@ var objectSelected;
 var colorBoundingBox = 'red';
 var labelFont        = '14px Arial';
 var spaceLabel       =  5; //number of pixels between text and bounding box
-var key              =  {'a': 65, 'c' : 67, 'd' : 68, 'e' : 69, 'p' : 80, 'q': 81, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85, 'up' : 38, 'down' : 40, 'w' : 87, 'x' : 88, 'enter' : 13, 'r' : 82, 'pgup': 33, 'pgdn': 34};
+var key              =  {'a': 65, 'c' : 67, 'd' : 68, 'p' : 80, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85, 'up' : 38, 'down' : 40, 'w' : 87, 'x' : 88, 'enter' : 13, 'esc' : 27, '1' : 49, '2' : 50};
 var messages         =  {'hideAll' : 0, 'closeFirst': 1, 'multipart': 2, 'finish': 3, 'success':4 };
 var settings         = null;
 var multipart        = false;
@@ -22,6 +22,7 @@ var shiftKeyDown = false;
 var delta = 2;      // translation in x and y
 var current_part = -1
 var current_annotation = -1; 
+ 
 
 /**
  * object that contains info for mouse
@@ -188,6 +189,8 @@ function pushNewBoundingBox(bb){
      dataset.frames[frameIndex].annotations[multipartObjectIndex].parts.push(oneAnnotation);
      current_part = dataset.frames[frameIndex].annotations[multipartObjectIndex].parts.length -1;
      current_annotation = multipartObjectIndex;
+     //move to the next label
+     nextLabel();
   }
 
   
@@ -345,6 +348,21 @@ function  getLastAnnotationIndices()
 }
 
 
+/***
+ * choose the next label in the list of labels
+ */
+function nextLabel(){
+  labelSelected++;
+  if(labelSelected === settings[objectSelected].labels.length){ 
+    startMultipartAnnotation(); // stop multipart annotation
+    labelSelected = 0; 
+    startMultipartAnnotation(); // initiate a new multipart annotation
+}
+
+   $("#select_label_type").val(settings[objectSelected].labels[labelSelected]);
+   showMessage(settings[objectSelected].labels[labelSelected]);
+}
+
 /**
  * to get pressed keys
  */
@@ -360,7 +378,7 @@ function addListenersToDocument(){
      else {
       shiftKeyDown = false;
      }
-    //console.log(event.keyCode);
+    
     //right key, next frame
     //if (event.keyCode == key['space'] || event.keyCode == key['right'])
     if ((!shiftKeyDown && event.keyCode == key['right']) || (event.keyCode == key['space']) )
@@ -368,33 +386,15 @@ function addListenersToDocument(){
       // it is a multipart object and need to be closed before moving
       if(startMultiPart)
       {
-        showHideAlerts(messages['closeFirst']);
+        //showHideAlerts(messages['closeFirst']);
+        startMultipartAnnotation(); //close
+        //startMultipartAnnotation(); // open a new one
         return;
       }
 
       if (frameIndex < dataset.frames.length - 1)
       {
           frameIndex++;
-          displayImage();
-          getLastAnnotationIndices();  
-      }
-     
-    }
-
-    // console.log(event.keyCode);
-    // move 50 frames ahead
-     if (event.keyCode == key['pgdn']) 
-    {
-      // it is a multipart object and need to be closed before moving
-      if(startMultiPart)
-      {
-        showHideAlerts(messages['closeFirst']);
-        return;
-      }
-
-      if (frameIndex < dataset.frames.length - 50)
-      {
-          frameIndex = frameIndex + 50;
           displayImage();
           getLastAnnotationIndices();  
       }
@@ -407,7 +407,10 @@ function addListenersToDocument(){
       // it is a multipart object and need to be closed before moving
       if(startMultiPart)
       {
-        showHideAlerts(messages['closeFirst']);
+        startMultipartAnnotation(); //close
+        //startMultipartAnnotation(); //open a new one
+
+        //showHideAlerts(messages['closeFirst']);
         return;
       }
 
@@ -420,33 +423,10 @@ function addListenersToDocument(){
 
     }
 
-    // frame -= 50
-    else if (event.keyCode == key['pgup'])
-    {
-      // it is a multipart object and need to be closed before moving
-      if(startMultiPart)
-      {
-        showHideAlerts(messages['closeFirst']);
-        return;
-      }
-
-      if (frameIndex > 50)
-      {
-          frameIndex =  frameIndex - 50;
-          displayImage();              
-          getLastAnnotationIndices(); 
-      }
-    }
-
     //select new label 'd' key
-    else if (event.keyCode == key['d'])
+    else if (event.keyCode == key['d'] || event.keyCode == key['esc'])
     {
-      labelSelected++;
-      if(labelSelected === settings[objectSelected].labels.length) 
-         labelSelected = 0; 
-
-      $("#select_label_type").val(settings[objectSelected].labels[labelSelected]);
-      showMessage(settings[objectSelected].labels[labelSelected]);
+      nextLabel();
     }
 
     // select previous label 'a'
@@ -516,7 +496,7 @@ function addListenersToDocument(){
       
       }
     }
-
+    
     else if(shiftKeyDown && event.keyCode === key['up']){
       getLastAnnotationIndices();
       if(current_annotation == -1)
@@ -561,40 +541,6 @@ function addListenersToDocument(){
          refreshImage();
        }
     }
-
-    // chance proportion of the bounding box by increasing height
-    else if(event.keyCode === key['q']){
-       
-       getLastAnnotationIndices();
-       if(current_annotation == -1)
-         return;
-       if((dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y - delta > 0) &&
-          (dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y + delta + 
-          dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].height < canvas.height )
-         )
-       {
-         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y -= delta/2;
-         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].height += delta;
-         refreshImage();
-       }
-    }
-
-    // change proportion of the bounding box by increasing width
-    else if(event.keyCode === key['e']){
-       
-       getLastAnnotationIndices();
-       if(current_annotation == -1)
-         return;
-       if((dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x - delta > 0) &&
-          (dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x + delta + 
-          dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].width < canvas.width )
-         )
-       {
-         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x -= delta/2;
-         dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].width += delta;
-         refreshImage();
-       }
-    }
      // reduce BoundingBox
     else if(event.keyCode === key['x'])
     {   
@@ -608,43 +554,6 @@ function addListenersToDocument(){
             refreshImage();
          }
     }
-    // duplicate previous annotation for this frame
-    else if(event.keyCode === key['r'])
-    {   
-      // it is a multipart annotation we don't do anything
-      if(multipart)
-      {
-        return;
-      }
-
-      if (frameIndex > 0)
-      {
-          // move index in one to get last annotation of the previous frame
-          frameIndex--;
-          
-          // get indices
-          getLastAnnotationIndices();
-          
-          // duplicate annotaton
-          bBox.coordinates[0] =  dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].x;
-          bBox.coordinates[1] =  dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].y;
-          bBox.coordinates[2] =  dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].width;
-          bBox.coordinates[3] =  dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].height;
-          bBox.label          =  dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].label;
-          bBox.annotationType =  dataset.frames[frameIndex].annotations[current_annotation].parts[current_part].type;    
-          //console.log (dataset.frames[frameIndex].annotations[current_annotation].parts[current_part]);  
-          // return index to current frame
-          frameIndex++;
-          getLastAnnotationIndices();
-          
-          //duplicate annotation
-          pushNewBoundingBox(bBox)
-
-          // display new annotation
-          displayImage();  
-      }
-    }
-
     //console.log(event.keyCode);
   });
 } // end addListenersToDocument
@@ -676,6 +585,45 @@ function addListenerToDownloadData(){
 } // end addListenerToDownloadData
 
 
+/***
+ * 
+ */
+function startMultipartAnnotation(){
+  
+  showHideAlerts(messages['hideAll']); // remove alerts messages
+  startMultiPart = !startMultiPart;
+    
+  // when starting a multipart annotation 
+  // a new object to hold all the annotations is created
+  if(startMultiPart){
+    //$("#multipartButton").text("Finish");
+    //$("#multipartButton").removeClass("btn btn-success").addClass("btn btn-danger");
+    var setOfParts = { 'parts' : [] };
+    dataset.frames[frameIndex].annotations.push(setOfParts);
+    
+    // current object parts
+    multipartObjectIndex = dataset.frames[frameIndex].annotations.length - 1;  
+    showHideAlerts(messages['hideAll']);   
+    showHideAlerts(messages['finish']);   
+
+    // set the labels in the first position
+    labelSelected = 0 
+    $("#select_label_type").val(settings[objectSelected].labels[labelSelected]);
+    showMessage(settings[objectSelected].labels[labelSelected]);  
+  }
+  else{
+    // check if there is at least one part annotated. If not, remove the parts object 
+    // inserted in the previous section of this if-else
+    // this prevent the system to push empty objects
+    if(dataset.frames[frameIndex].annotations[multipartObjectIndex].parts.length === 0)
+      dataset.frames[frameIndex].annotations.pop();
+      
+    //$("#multipartButton").text("Start"); 
+    //$("#multipartButton").removeClass("btn btn-danger").addClass("btn btn-success");
+  }
+}
+
+
 /**
  * Listener for multipartButton  
  */
@@ -683,32 +631,8 @@ function addListenerToMultipartButton(){
 
   $("#multipartButton").click(function(event)
   {
-    showHideAlerts(messages['hideAll']); // remove alerts messages
-    startMultiPart = !startMultiPart;
-    
-    // when starting a multipart annotation 
-    // a new object to hold all the annotations is created
-    if(startMultiPart){
-      $("#multipartButton").text("Finish");
-      $("#multipartButton").removeClass("btn btn-success").addClass("btn btn-danger");
-       var setOfParts = { 'parts' : [] };
-       dataset.frames[frameIndex].annotations.push(setOfParts);
-       // current object parts
-       multipartObjectIndex = dataset.frames[frameIndex].annotations.length - 1;  
-       showHideAlerts(messages['hideAll']);   
-       showHideAlerts(messages['finish']);     
-    }
-    else{
-      // check if there is at least one part annotated. If not, remove the parts object 
-      // inserted in the previous section of this if-else
-      // this prevent the system to push empty objects
-      if(dataset.frames[frameIndex].annotations[multipartObjectIndex].parts.length === 0)
-        dataset.frames[frameIndex].annotations.pop();
-      
-      $("#multipartButton").text("Start"); 
-      $("#multipartButton").removeClass("btn btn-danger").addClass("btn btn-success");
-    }
- });   
+    startMultipartAnnotation();  
+  });   
 } // end listener for multipartbutton
 
 
@@ -796,10 +720,12 @@ function annotationTypeAndLabels(){
      multipart = (settings[index].multipart === "true")? true : false; // if this a multipart annotation or it is not
      
      // display or hide button to start and finish multipart object annotation task
-     if(multipart === true)
-       $('#multipartButton').attr("style", "display:display");
-     else
-       $('#multipartButton').attr("style", "display:none");
+     if(multipart === true){
+       //$('#multipartButton').attr("style", "display:display");
+       startMultipartAnnotation();  
+    }
+     //else
+       //$('#multipartButton').attr("style", "display:none");
     
      $('#select_label_type').html(""); //clear drop down list
      $('#select_label_type').json2html(settings[index].labels, {'<>':'option','html': '$', 'value':'$'});
