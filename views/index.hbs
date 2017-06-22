@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Annotation Tool</title>
+
+    <link href="css/bootstrap/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="css/starter-template.css" rel="stylesheet">
+</head>
+
+<body>
+<div id="alert" role="alert"></div>
+
+<div class="container-fluid">
+    <div class="starter-template">
+        <div class="col-md-8">
+            <h1>Annotator</h1><hr>
+            <div class="row">
+                <!-- drop down list to show datasets  -->
+                <div class="col-md-4">
+                    <h3>Sources</h3>
+                    <div class="form-group">
+                        <select id="select" class="form-control"></select>
+                    </div>
+                </div>
+                <!-- drop down list to show objects  -->
+                <div id="row_annotation_type" class="col-md-4">
+                    <div class="form-group">
+                        <div id="annotation_type">
+                            <h3>Annotation type</h3>
+                            <select id="select_annotation_type" class="form-control"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- drop down list to show labels  -->
+                <div id="row_annotation_label" class="col-md-4">
+                    <div class="form-group">
+                        <div id="annotation_label">
+                            <h3>Annotation label</h3>
+                            <select id="select_annotation_label" class="form-control"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>  <!-- row1-->
+
+            <div class="row">
+                <div class="vertical_align">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label id="label_auto_create_box" class="btn btn-primary">
+                            <input  id="auto_create_box" type="checkbox" autocomplete="off">Autocreation of torso box :
+                            <span id="span_auto_create_box" class="glyphicon glyphicon-remove"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <!-- canvas -->
+            <div class="row">
+                <canvas id="canvas" tabindex=0 width=480 height=360></canvas>
+            </div>
+            <!-- end canvas-->
+
+            <!-- details -->
+            <div class="row">
+                <div id="frames" class="col-sm-4"></div>
+                <div id="spatial_annotations" class="col-sm-4"></div>
+                <div id="time_annotations" class="col-sm-4"></div>
+            </div>
+            <!-- end details -->
+
+        </div>
+
+        <div class="col-md-4 bordered">
+            <!-- keyboard shortcut -->
+            <div class="row">
+                <div id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        <div class="card-header" role="tab">
+                            <h3 class="mb-0">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#keyboard_ref" aria-expanded="true" aria-controls="collapseOne">
+                                    Keyboard shortcuts reference
+                                </a>
+                            </h3>
+                        </div>
+                        <div id="keyboard_ref" class="collapse">
+                            <table class="table_shortcuts">
+                                <tr>
+                                    <td>&#8678;/&#8680; or mouse wheel</td>
+                                    <td>Previous/next frame</td>
+                                </tr>
+                                <tr>
+                                    <td>&Uarr; (pgUp)</td>
+                                    <td>&uarr; 50 frames</td>
+                                </tr>
+                                <tr>
+                                    <td>&Darr; (pgDown)</td>
+                                    <td>&darr; 50 frames</td>
+                                </tr>
+                                <tr>
+                                    <td>a</td>
+                                    <td>Next annotation type</td>
+                                </tr>
+                                <tr>
+                                    <td>z</td>
+                                    <td>Next annotation label</td>
+                                </tr>
+                                <tr>
+                                    <td>e</td>
+                                    <td>Next time annotation label</td>
+                                </tr>
+                                <tr>
+                                    <td>u</td>
+                                    <td>Undo last annotation step</td>
+                                </tr>
+                                <tr>
+                                    <td>c</td>
+                                    <td>Clear annotations in current frame</td>
+                                </tr>
+                                <tr>
+                                    <td>d + click</td>
+                                    <td>Delete the box</td>
+                                </tr>
+                                <tr>
+                                    <td>r</td>
+                                    <td>Recopy annotations from previous frame</td>
+                                </tr>
+                                <tr>
+                                    <td>esc</td>
+                                    <td>Stop the current drawing</td>
+                                </tr>
+                                <tr>
+                                    <td>shift + mouse</td>
+                                    <td>Resize box</td>
+                                </tr>
+                                <tr>
+                                    <td>ctrl + mouse</td>
+                                    <td>Move the box</td>
+                                </tr>
+                            </table>
+                            <div class="row">
+                                <br>
+                            </div>
+                        </div>
+                        <!-- collapse-->
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <!-- end keyboard shortcut -->
+
+            <!-- Download and upload -->
+            <div class="row">
+                <div id="accordion2" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        <div class="card-header" role="tab">
+                            <h3 class="mb-0">
+                                <a data-toggle="collapse" data-parent="#accordion2" href="#setup_parameters" aria-expanded="true" aria-controls="collapseOne">
+                                    Settings
+                                </a>
+                            </h3>
+                        </div>
+
+                        <div id="setup_parameters" class="collapse">
+                            <div class="card-block">
+                                <table>
+                                    <tr>
+                                        <td>Upload Annotations </td>
+                                        <td><input id="upload" type="file" class="form-control input-md"></td>
+                                    </tr>
+                                    <tr><td><p></p></td></tr> <!-- Blank line-->
+                                    <tr>
+                                        <td>Download annotations </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <div class="input-group-btn">
+                                                    <a id="download" href="#" class="btn btn-default"><i class="glyphicon glyphicon-download"></i></a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!-- upload previous annotations -->
+
+                            </div>
+
+
+                        </div> <!--collapse-->
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <!-- end download and upload -->
+
+            <!-- Time annotation -->
+            <div id="row_time_annotations" class="row">
+                <div id="accordion3" role="tablist" aria-multiselectable="true">
+                    <div class="card">
+                        <div class="card-header" role="tab">
+                            <h3 class="mb-0">
+                                <a data-toggle="collapse" data-parent="#accordion3" href="#time_annotation" aria-expanded="true" aria-controls="collapseOne">
+                                    Time annotation
+                                </a>
+                            </h3>
+                        </div>
+
+                        <div id="time_annotation" class="collapse">
+                            <!-- drop down list to show objects  -->
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-sm-6">
+                                        <label for="select_time_annotation_type">Chose your category of time annotations</label>
+                                        <select id="select_time_annotation_type" class="form-control"></select>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="select_time_annotation_label">Chose your time annotation</label>
+                                        <select id="select_time_annotation_label" class="form-control "></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group centered col-sm-6">
+                                    <div class="form-group">
+                                        <label for="start_box_time_annotation">Click to associate time annotation to a box</label>
+                                        <button id="start_box_time_annotation" type="button" class="btn btn-primary">Start drawing</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- button -->
+                            <div class="row">
+                                <div class="form-group">
+                                    <button id="start_time_annotation" type="button" class="btn btn-success"></button>
+                                </div>
+                            </div>
+
+                            <div id="time_annotations_in_progress"></div>
+                        </div> <!--collapse-->
+                    </div>
+                </div>
+            </div>
+            <!-- end time annotation -->
+
+        </div> <!--col-md-4-->
+    </div> <!--tamplate-->
+</div> <!-- container -->
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="js/jquery-2.2.2.min.js" type="text/javascript"></script>
+<script src="js/bootstrap.min.js" type="text/javascript"></script>
+<script src="js/sprintf.js"></script>
+<script src="js/json2html.js"></script>
+<script src="js/jquery.json2html.js"></script>
+<script src="http://code.jquery.com/qunit/qunit-2.0.1.js"></script>
+<script src="js/socket.io/socket.io.js"></script>
+<script src="js/socket.js"></script>
+<script src="js/annotator.js"></script>
+</body>
+</html>
