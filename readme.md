@@ -21,5 +21,7 @@ If you want to add a new dataset please do this :
 1) Create a new folder in the data folder with the name you want
 2) Paste in the folder you've created all your images
 3) Run :  
- `python python_files/folder2json.py data/your_new_folder //create the data.json file`  
- `python python_files/datasetsFromFolders.py //add to config/datasets your folder`
+create the data.json file :
+`python python_files/folder2json.py data/your_new_folder `  
+add your folder to config/datasets 
+`python python_files/datasetsFromFolders.py `
