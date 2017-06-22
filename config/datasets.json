@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Select Dataset",
+    "url": ""
+  },
+  {
+    "name": "video0",
+    "url": "data/video0/data.json"
+  },
+  {
+    "name": "video1",
+    "url": "data/video1/data.json"
+  },
+  {
+    "name": "2017-05-29/0",
+    "url": "data/2017-05-29/0/data.json"
+  },
+  {
+    "name": "test",
+    "url": "data/test/data.json"
+  }
+]

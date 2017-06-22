@@ -1,0 +1,73 @@
+====================video2files.py====================
+Description:
+Convert a video in multiple frames.
+
+Typical command : 
+python video2files.py source\video1.mp4 -f data/captures/video1 -w 640 -s 1 -r 0
+
+====================folder2json.py====================
+Description:
+Use frames to implement a json file containing all the informations needed.
+
+Typical command : 
+python folder2json.py data\captures\videox\
+
+====================datasetsFromFolders.py====================
+Description:
+Take all the directory name in data/captures/ and create for each repository name
+his url and name in the datasets json file.
+
+Typical command : 
+python datasetsFromFolders.py
+
+====================convertor.py====================
+Description:
+Convert the file given by automated annotation into annotation readable by the interface
+
+Typical command : 
+python convertor.py file_to_convert.json -f "data/captures/feb22" -o "data.json" -t "heads" -l "head" --width 720 --height 576
+python convertor.py test.json -f "data/captures/" -o "data.json" -t "heads" -l "head" --width 720 --height 576
+
+====================config/config.json====================
+Description:
+Config the annotations you will have on the interface
+
+Params:
+name = name of the type of annotation (ex: "name":"hands")
+type = type of annotation possible : multiple, order, unique, time (ex: "type"="multiple") 
+labels = name of the annotation allowed (ex : "labels":["left hand", "right hand"])
+
+Typical format: 
+[
+	{
+		"name" : "x",
+		"type" : "x",
+		"labels" : [
+			"x",
+			"x"
+		]
+	},
+	{
+		"name" : "x",
+		"type" : "x",
+		"labels" : [
+			"x",
+			"x"
+		]
+	}
+] 
+
+====================config/datasets.json====================
+Description:
+Used to load all the informations about the frames.
+
+Typical format:
+[
+	{"name": "Select Dataset", "url": ""},
+	{"name": "videox", "url": "./data/captures/videox/data.json"},
+	{"name": "videoy", "url": "./data/captures/videoy/data.json"}
+]
+
+
+
+
