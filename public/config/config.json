@@ -25,7 +25,7 @@
     ]
   },
   {
-    "name" : "Person",
+    "name" : "opencv",
     "type" : "unique",
     "annotations" :
     [

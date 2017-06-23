@@ -22,5 +22,5 @@ function socket_init(){
  */
 function socket_send(name, data){
     socket.emit(name, data);
-    console.log('Socket "' + name + '" sent from app to server');
+    //console.log('Socket "' + name + '" sent from app to server');
 }

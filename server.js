@@ -32,6 +32,7 @@ io.on('connection', function(socket){
     //socket sent by public/js/annotater.js
     socket.on('new frame', function(data){
         console.log(util.inspect("Event new frame received"));
+
         if(data.regions.length > 0){ //if there isn't any annotation, we do nothing
             var path_images = './tmp/' //path where temporary images will be saved
                 , path_data = "./public/" + data.url; //path where the base of the program is saved
@@ -51,7 +52,7 @@ io.on('connection', function(socket){
                     if(err) throw err;
                 });
             });
-
+            //console.log(util.inspect(["Région recue : ", data.regions[0].x, data.regions[0].y, data.regions[0].width, data.regions[0].height]));
             //execute the built file and pass it the args
             execFile('./cpp/build/Release/tracker', [data.regions[0].x, data.regions[0].y, data.regions[0].width, data.regions[0].height],function(error, stdout) {
                 if (error) throw error;
@@ -62,10 +63,11 @@ io.on('connection', function(socket){
                     line = line.replace('[',"");
                     line = line.replace(']',"");
                     return line.split(',').slice().map(function(number){
-                        return Math.floor(parseFloat(number));
+                        return (parseFloat(number));
                     })
                 });
 
+                //console.log(util.inspect("Nouvelles coordonées : ",new_coord));
                 //we send a socket to /public/js/socket.js with the new coord
                 socket.emit('new frame', new_coord);
             });

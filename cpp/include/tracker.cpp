@@ -39,7 +39,7 @@ void tracker(int argc, char* argv[]){
     std::vector<cv::Point2f> grid;
     for (int i = 0; i < size_grid; i++) {
         for (int j = 0; j < size_grid; j++) {
-            cv::Point2f p(bb.x+i*bb.width/size_grid, bb.y+j*bb.height/size_grid);
+            cv::Point2f p(bb.x + i * bb.width / (size_grid-1), bb.y + j * bb.height / (size_grid-1));
             grid.push_back(p);
         }
     }
@@ -63,19 +63,20 @@ void tracker(int argc, char* argv[]){
     }
     cv::imshow("Initial points", image1);
 
-
+    //int min_x = newPoints[0].x, min_y = newPoints[0].y, min_max_x = newPoints[size_grid*size_grid-1].x, min_max_y = newPoints[size_grid*size_grid-1].y;
+    //int counter = 0;
     for (cv::Point2f p : newPoints) {
         cv::circle(image2, p, 1, cv::Scalar(255, 255, 255), -1);
+
+        //counter++;
     }
     cv::imshow("Tracked points", image2);
 
     //std::cout << "Erreur :" << err[0] << "," << err[1] << std::endl;
 
     std::cout << newPoints[0] << std::endl;
-    std::cout << newPoints[(size_grid-1)*size_grid] << std::endl;
-    std::cout << newPoints[size_grid-1] << std::endl;
     std::cout << newPoints[size_grid*size_grid-1];
 
-    cv::waitKey();
+    //cv::waitKey();
 
 }

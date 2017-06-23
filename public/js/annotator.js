@@ -7,10 +7,10 @@ var temp_region     = null; // temporary region used for time annotation
 var frameIndex       = -1;
 var timeAnnotations = []; // contains time annotations that are not yet finished (don't have any frame end)
 var timeLabelSelected = 0, timeObjectSelected = 0, labelSelected = 0, objectSelected = 0;
-var key              =  {'a': 65, 'c' : 67, 'd' : 68, 'e':69, 'p' : 80, 'z' : 90, 'r' : 82, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85, 'up' : 38, 'down' : 40, 'w' : 87, 'x' : 88, 'enter' : 13, 'esc' : 27, '+' : 107, '-' : 109, 'pgup': 33, 'pgdn': 34, 'ctrl':17, 'shift':16};
+var key              =  {'a':65,'s':83,'c':67,'d':68,'e':69,'p':80,'z':90,'r':82, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85, 'up' : 38, 'down' : 40, 'w' : 87, 'x' : 88, 'enter' : 13, 'esc' : 27, '+' : 107, '-' : 109, 'pgup': 33, 'pgdn': 34, 'ctrl':17, 'shift':16};
 var spacial_settings = [];
 var time_settings = [];
-var shiftKeyDown, ctrlKeyDown, hKeyDown, wKeyDown, dKeyDown = false;
+var shiftKeyDown, ctrlKeyDown, hKeyDown, wKeyDown, dKeyDown, sKeyDown;
 var bound_moving = {'left':false, 'right':false, 'lower':false, 'upper':false, 'all':false};
 var type_annotation_clicked = ""; //For resizing of moving box
 var index_annotation_clicked = -1;//For resizing of moving box
@@ -606,27 +606,31 @@ function drawRectangle(x, y, width, height, label, color){
     context.stroke();
     context.closePath();
 
-    // draw the background rectangle
-    context.beginPath();
-    context.fillStyle = 'white';
-    context.fillRect(x, y, context.measureText(label).width, -20);
-    context.stroke();
-    context.closePath();
+    if(!sKeyDown){
 
-    //draw the text
-    context.beginPath();
-    context.fillStyle = color;
-    context.fillText(label, x, y - spaceLabel);
-    context.stroke();
-    context.closePath();
+        // draw the background rectangle
+        context.beginPath();
+        context.fillStyle = 'white';
+        context.fillRect(x, y, context.measureText(label).width, -20);
+        context.stroke();
+        context.closePath();
+
+        //draw the text
+        context.beginPath();
+        context.fillStyle = color;
+        context.fillText(label, x, y - spaceLabel);
+        context.stroke();
+        context.closePath();
+    }
 }
 
 function newTrackedBox(data){
     bbox = new stateBBox();
+    console.log(["Region recue :",data[1][0],data[1][1] ]);
     bbox.coordinates[0] = data[0][0];
     bbox.coordinates[1] = data[0][1];
-    bbox.coordinates[2] = data[1][0];
-    bbox.coordinates[3] = data[1][1];
+    bbox.coordinates[2] = data[1][0] - data[0][0];
+    bbox.coordinates[3] = data[1][1] - data[0][1];
     bbox.label = 'opencv';
     bbox.annotationType = 'opencv';
     pushNewAnnotation(bbox, 'box');
@@ -659,7 +663,7 @@ function getAndPrintAllBoxesForCurrentImage(){
                     context.stroke();
                     context.closePath();
                 }
-                drawLineLabel(annotation.label, annotation.coordinates[0], annotation.coordinates[1]);
+                if(!sKeyDown) drawLineLabel(annotation.label, annotation.coordinates[0], annotation.coordinates[1]);
             }
         }
         //lines which are currently drawing
@@ -1029,6 +1033,10 @@ function addListenersToDocument(){
         if (event.keyCode == key['w']) wKeyDown = true;
         if (event.keyCode == key['ctrl']) ctrlKeyDown = true;
         if (event.keyCode == key['d']) dKeyDown = true;
+        if (event.keyCode == key['s']) {
+            sKeyDown = !sKeyDown;
+            refreshImage();
+        }
 
         //right key, next frame
         if (event.keyCode == key['right']) {
@@ -1040,12 +1048,16 @@ function addListenersToDocument(){
                 var frame_src = dataset.frames[frameIndex].file;
                 var next_frame = dataset.frames[frameIndex+1].file;
                 var regions = getAndPrintAllBoxesForCurrentImage();
-                socket_send('new frame', {
-                    url         : dataset.name,
-                    frame_src   : frame_src,
-                    next_frame  : next_frame,
-                    regions      : regions });
-
+                for(var i = 0; i < regions.length; i++){
+                    if(regions[0].type === "opencv"){
+                        //console.log(["Region envoyée :", regions[0]]);
+                        socket_send('new frame', {
+                            url         : dataset.name,
+                            frame_src   : frame_src,
+                            next_frame  : next_frame,
+                            regions      : regions });
+                    }
+                }
                 frameIndex++;
                 displayImage();
             }
