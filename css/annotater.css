@@ -1,3 +1,7 @@
+body{
+    overflow-x: hidden;
+}
+
 .starter-template {
     text-align: center;
 }
@@ -17,10 +21,14 @@ table td{
     text-align: center;
 }
 
+/* decrease sizes */
+.form-control, td, .btn{font-size:12px;}
+.alert{padding: 8px;}
+
+
+
 /*checkbox*/
 .vertical_align{
-    width: 200px;
-    height: 100px;
     display: inline-flex;
     align-items: center;
 }

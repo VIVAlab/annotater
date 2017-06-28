@@ -7,27 +7,33 @@ var temp_region     = null; // temporary region used for time annotation
 var frameIndex       = -1;
 var timeAnnotations = []; // contains time annotations that are not yet finished (don't have any frame end)
 var timeLabelSelected = 0, timeObjectSelected = 0, labelSelected = 0, objectSelected = 0;
-var key              =  {'a': 65,'s':83,'c' : 67, 'd' : 68, 'e':69, 'p' : 80, 'z' : 90, 'r' : 82, 'left' : 37, 'right' : 39, 'space' : 32, 'u' : 85, 'up' : 38, 'down' : 40, 'w' : 87, 'x' : 88, 'enter' : 13, 'esc' : 27, '+' : 107, '-' : 109, 'pgup': 33, 'pgdn': 34, 'ctrl':17, 'shift':16};
+var key              =  {'a': 65,'s':83,'d':68,'e':69,'h':72,'z':90,'r':82,'left':37,'right':39,'u':85,'esc':27,'pgup':33,'pgdn':34,'ctrl':17,'shift':16};
 var spacial_settings = [];
 var time_settings = [];
-var shiftKeyDown, ctrlKeyDown, hKeyDown, wKeyDown, dKeyDown, sKeyDown;
+var shiftKeyDown, ctrlKeyDown, dKeyDown, sKeyDown, hKeyDown;
+var info_box_before_move = {};
 var bound_moving = {'left':false, 'right':false, 'lower':false, 'upper':false, 'all':false};
+var index_point_clicked = -1;
 var type_annotation_clicked = ""; //For resizing of moving box
 var index_annotation_clicked = -1;//For resizing of moving box
-var info_box_before_move = {};
 var diff_x, diff_y;
 var wait_for_click;
 var auto_creation = false;
 
-//changable :
-var colorBoundingBox = "#FF0000";
-var colorTimeBoundingBox = "#0000FF";
-var colorLine = "#FF0000";
-var labelFont        = '18px Arial';
-var spaceLabel       =  5; //number of pixels between text and bounding box
-var line_width = 10;
-var auto_creation_torso_height = 1.5;
-var auto_creation_torso_width = 2;
+// var changables :
+var options = {
+    'colorLine'     : "#FF0000",
+    'labelFont'     : '18px Arial',
+    'spaceLabel'    :  5, //number of pixels between text and bounding box
+    'line_width'    : 10,
+    'circle_diameter'   : 8,
+    'colorHiddenLine'   : "#067a13",
+    'auto_creation_torso_height'    : 1.5,
+    'auto_creation_torso_width'     : 2,
+    'colorBoundingBox'              : "#FF0000",
+    'colorTimeBoundingBox'          : "#0000FF"
+};
+
 
 /**
  * object that contains info for mouse
@@ -220,7 +226,7 @@ function sortByNameFile(a ,b){
  * get whether canvas is busy
  */
 function getIfCanvasFree(){
-    return (getBoundMoving()==='none' && !wait_for_click && (bBox.nClicks != 1) && (line.nbClicks==0) && (temp_region==null));
+    return (getBoundMoving()==='none' && (index_point_clicked === -1) && !wait_for_click && (bBox.nClicks != 1) && (line.nbClicks==0) && (temp_region==null));
 }
 
 /**
@@ -241,10 +247,10 @@ function autoCreateTorsoBox(){
             annotation = dataset.frames[frameIndex].annotations[i];
             if(annotation.label === "head" || annotation.label === "Head"){
                 bbox = new stateBBox();
-                bbox.coordinates[0] = (annotation.x + annotation.width/2 - annotation.width*auto_creation_torso_width/2) < 0 ? 0 : annotation.x + annotation.width/2 - annotation.width*auto_creation_torso_width/2;
+                bbox.coordinates[0] = (annotation.x + annotation.width/2 - annotation.width*options['auto_creation_torso_width']/2) < 0 ? 0 : annotation.x + annotation.width/2 - annotation.width*options['auto_creation_torso_width']/2;
                 bbox.coordinates[1] = annotation.y + annotation.height;
-                bbox.coordinates[2] = (bbox.coordinates[0] + annotation.width*auto_creation_torso_width) < canvas.width ? annotation.width*auto_creation_torso_width : canvas.width - bbox.coordinates[0];
-                bbox.coordinates[3] = (bbox.coordinates[1] + annotation.height*auto_creation_torso_height) < canvas.height ? annotation.height*auto_creation_torso_height : canvas.height - bbox.coordinates[1];
+                bbox.coordinates[2] = (bbox.coordinates[0] + annotation.width*options['auto_creation_torso_width']) < canvas.width ? annotation.width*options['auto_creation_torso_width'] : canvas.width - bbox.coordinates[0];
+                bbox.coordinates[3] = (bbox.coordinates[1] + annotation.height*options['auto_creation_torso_height']) < canvas.height ? annotation.height*options['auto_creation_torso_height'] : canvas.height - bbox.coordinates[1];
                 bbox.label = "Torso";
                 bbox.annotationType = annotation.type;
                 drawRectangle(
@@ -274,6 +280,7 @@ function clickOnABox(annotation, mouse_pos , type_annotation, num_annotation){
     var lower_bound = {'x_start':0, 'x_end':0, 'y_start':0, 'y_end':0}; // {coord_x_start, coord_x_end, coord_y_start, coord_y_end}
     // get positions of each part of the box
     // verticals parts
+    var line_width = options['line_width'];
     left_bound['x_start']   = annotation.x - line_width;
     left_bound['x_end']     = left_bound['x_start'] + 2*line_width;
     left_bound['y_start']   = annotation.y - line_width;
@@ -345,55 +352,99 @@ function clickOnABox(annotation, mouse_pos , type_annotation, num_annotation){
 /**
  * get if user has clicked on a line with d key pressed
  */
-function clickOnALine(annotation, mouse_pos){
-    var a,b;
-    var ax, ay, bx, by;
-    var line;
-    var vertical = false;
+function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
+    var clicked = false;
 
-    for(var i = 0; i < annotation.coordinates.length-1; i++){
-        [ax , ay]= annotation.coordinates[i];
-        [bx , by]= annotation.coordinates[i+1];
+    // clicked on a point ?
+    for(var i = 0; i < annotation.coordinates.length; i++){
+        if(mouse_pos.x < annotation.coordinates[i][0] + options['line_width']
+            && mouse_pos.x > annotation.coordinates[i][0] - options['line_width']
+            && mouse_pos.y < annotation.coordinates[i][1] + options['line_width']
+            && mouse_pos.y > annotation.coordinates[i][1] - options['line_width'] ){
+            clicked = true;
+            if(dKeyDown){
+                dataset.frames[frameIndex].annotations.splice(num_annotation, 1);
+                showMessage({'type': 'success', 'message': 'Annotation deleted'});
+                refreshImage();
+            }
+            else if(ctrlKeyDown){
+                index_annotation_clicked = num_annotation;
+                index_point_clicked = i;
+            }
+            else if(hKeyDown){
+                dataset.frames[frameIndex].annotations[num_annotation].hidden = !dataset.frames[frameIndex].annotations[num_annotation].hidden;
+                if(dataset.frames[frameIndex].annotations[num_annotation].hidden) showMessage({'type': 'success', 'message': 'Annotation is now hidden'});
+                else showMessage({'type': 'success', 'message': 'Annotation is now visible'});
+                refreshImage();
+            }
+        }
+    }
 
-        //have to find if a point is in a line
-        //y = ax + b
-        vertical = Math.abs(bx-ax) > line_width ? false : true;
-        if(!vertical){
-            //a :
-            a = (by - ay)/(bx - ax);
-            //b :
-            b = ay - a*ax;
-            //we now will see if we clicked on the line or near it
-            for(var j=0; j <= line_width; j++){
-                line = a*mouse_pos.x + (b-(line_width/2)+j);
-                if(Math.round(mouse_pos.y) == Math.round(line)){
-                    if((mouse_pos.x < bx && mouse_pos.x > ax) || (mouse_pos.x > bx && mouse_pos.x < ax)){
-                        return true;
+    // clicked on a line ?
+    if(!clicked){
+        var a,b;
+        var ax, ay, bx, by;
+        var line;
+        var vertical = false;
+        var line_width = options['line_width'];
+        for(var i = 0; i < annotation.coordinates.length-1; i++){
+            [ax , ay]= annotation.coordinates[i];
+            [bx , by]= annotation.coordinates[i+1];
+
+            //have to find if a point is in a line
+            //y = ax + b
+            vertical = Math.abs(bx-ax) > line_width ? false : true;
+            if(!vertical){
+                //a :
+                a = (by - ay)/(bx - ax);
+                //b :
+                b = ay - a*ax;
+                //we now will see if we clicked on the line or near it
+                for(var j=0; j <= line_width; j++){
+                    line = a*mouse_pos.x + (b-(line_width/2)+j);
+                    if(Math.round(mouse_pos.y) == Math.round(line)){
+                        if((mouse_pos.x < bx && mouse_pos.x > ax) || (mouse_pos.x > bx && mouse_pos.x < ax)){
+                            clicked = true;break;
+                        }
                     }
                 }
             }
-        }
-        else { //if line is verticale
-            if(ay > by){ //if from bottom to top
-                if( mouse_pos.x     < (ax + line_width)
-                    && mouse_pos.x  > (ax - line_width)
-                    && mouse_pos.y  > by
-                    &&  mouse_pos.y < ay){
-                    return true;
+            else { //if line is verticale
+                if(ay > by){ //if from bottom to top
+                    if( mouse_pos.x     < (ax + line_width)
+                        && mouse_pos.x  > (ax - line_width)
+                        && mouse_pos.y  > by
+                        &&  mouse_pos.y < ay){
+                        clicked = true;break;
+                    }
                 }
-            }
-            else {
-                if( mouse_pos.x     < (ax + line_width)
-                    && mouse_pos.x  > (ax - line_width)
-                    && mouse_pos.y  < by
-                    &&  mouse_pos.y > ay){
-                    return true;
+                else {
+                    if( mouse_pos.x     < (ax + line_width)
+                        && mouse_pos.x  > (ax - line_width)
+                        && mouse_pos.y  < by
+                        &&  mouse_pos.y > ay){
+                        clicked = true;
+                    }
                 }
-            }
 
+            }
+        }
+        if(clicked){
+            if(dKeyDown){
+                dataset.frames[frameIndex].annotations.splice(num_annotation, 1);
+                showMessage({'type': 'success', 'message': 'Box deleted'});
+                refreshImage();
+            }
+            else if(hKeyDown){
+                dataset.frames[frameIndex].annotations[num_annotation].hidden = !dataset.frames[frameIndex].annotations[num_annotation].hidden;
+                if(dataset.frames[frameIndex].annotations[num_annotation].hidden) showMessage({'type': 'success', 'message': 'Annotation is now hidden'});
+                else showMessage({'type': 'success', 'message': 'Annotation is now visible'});
+                refreshImage();
+            }
         }
     }
-    return false;
+
+
 }
 
 /**
@@ -512,8 +563,6 @@ function addTimeAnnotation(anAnnotation){
     showMessage({'type':'success', 'message':'Time annotation '+anAnnotation.label+' started'});
 }
 
-
-
 /**
  * Push a new annotation
  */
@@ -526,6 +575,7 @@ function pushNewAnnotation(anAnnotation, type){
                 'junctions_number'  : anAnnotation.nbJunctions,
                 'type'              : anAnnotation.annotationType,
                 'label'             : anAnnotation.label,
+                'hidden'            : false,
                 'coordinates'       : anAnnotation.coordinates
             };
             dataset.frames[frameIndex].annotations.push(annotation);
@@ -572,36 +622,71 @@ function saveTemporarilyRegion(bb){
 }
 
 /**
- * draw label along a line
+ * draw labels on annotations
  */
-function drawLineLabel(text, p1, p2){
-    var dx = p2[0] - p1[0];
-    var dy = p2[1] - p1[1];
-    var padding = 2;
-    var pad = padding / Math.sqrt(dx*dx+dy*dy);
+function drawLabel(p1, label, type, params = {}){
+    var x = p1[0], y = p1[1];
+    if(type === "rectangle"){
+        // draw the background rectangle
+        context.beginPath();
+        context.fillStyle = 'white';
+        context.fillRect(x, y - options['spaceLabel']/2, context.measureText(label).width, -20);
+        context.stroke();
+        context.closePath();
 
-    context.save();
-    context.textAlign = 'left';
-    context.translate(p1[0] + dx*pad, p1[1] + dy*pad);
-    context.rotate(Math.atan2(dy,dx));
+        //draw the text
+        context.beginPath();
+        context.fillStyle = typeof params.color != 'undefined' ? params.color : options['colorBoundingBox'];
+        context.fillText(label, x, y - options['spaceLabel']);
+        context.stroke();
+        context.closePath();
+    }
+    else if(type === "point"){
+        var space = options['spaceLabel']*3;
+        // draw the background rectangle
+        context.beginPath();
+        context.fillStyle = 'white';
+        context.fillRect(x - context.measureText(label).width/2, y - space + 3, context.measureText(label).width, -20);
+        context.stroke();
+        context.closePath();
 
-    context.beginPath();
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, context.measureText(text).width, -20);
-    context.fillStyle = colorBoundingBox;
-    context.stroke();
-    context.closePath();
+        //draw the text
+        context.beginPath();
+        context.fillStyle =  typeof params.color != 'undefined' ? params.color : options['colorLine'];
+        context.fillText(label, x - context.measureText(label).width/2, y - space);
+        context.stroke();
+        context.closePath();
+    }
+    else if(type === "line"){
+        //draw label along a line
+        var dx = params['p2'][0] - x;
+        var dy = params['p2'][1] - y;
+        var padding = 2;
+        var pad = padding / Math.sqrt(dx*dx+dy*dy);
 
-    context.fillStyle = colorLine;
-    context.fillText(text, 0, 0);
-    context.restore();
+        context.save();
+
+        context.textAlign = 'left';
+        context.translate(x + dx*pad, y + dy*pad);
+        context.rotate(Math.atan2(dy,dx));
+
+        context.fillStyle = 'white';
+        context.beginPath();
+        context.fillRect(0, 0, context.measureText(label).width, -20);
+        context.closePath();
+        context.stroke();
+
+        context.fillStyle =  typeof params.color != 'undefined' ? params.color :options['colorLine'];
+        context.fillText(label, 0, 0);
+        context.restore();
+    }
 }
 
 /**
  * draw a rectangle on the canvas
  */
 function drawRectangle(x, y, width, height, label, color){
-    if(color == null) color = colorBoundingBox;
+    if(color == null) color = options['colorBoundingBox'];
     context.beginPath();
     context.rect(
         x,
@@ -613,19 +698,43 @@ function drawRectangle(x, y, width, height, label, color){
     context.closePath();
 
     if(!sKeyDown){
-        // draw the background rectangle
-        context.beginPath();
-        context.fillStyle = 'white';
-        context.fillRect(x, y, context.measureText(label).width, -20);
-        context.stroke();
-        context.closePath();
+        drawLabel([x, y], label, "rectangle");
+    }
+}
 
-        //draw the text
+/**
+ * draw points and lines between these points
+ */
+function drawPoints(annotation){
+    // first draw the points
+    if(annotation.hidden){
+        context.strokeStyle = options['colorHiddenLine'];
+        context.fillStyle = options['colorHiddenLine'];
+    }
+    else {
+        context.strokeStyle = options['colorLine'];
+        context.fillStyle = options['colorLine'];
+    }
+
+    for(var i = 0; i < annotation.coordinates.length; i++){
         context.beginPath();
-        context.fillStyle = color;
-        context.fillText(label, x, y - spaceLabel);
+        context.arc(annotation.coordinates[i][0], annotation.coordinates[i][1], options['circle_diameter'], 0, Math.PI*2, true);
+        context.fill();
+        context.closePath();
+    }
+
+    //and then, if necessary, draw lines between the points
+    for(var j = 0; j < annotation.coordinates.length - 1; j++){
+        context.beginPath();
+        context.moveTo(annotation.coordinates[j][0], annotation.coordinates[j][1]);
+        context.lineTo(annotation.coordinates[j+1][0],annotation.coordinates[j+1][1]);
         context.stroke();
         context.closePath();
+    }
+
+    if(!sKeyDown) {
+        if(annotation.coordinates.length > 1) drawLabel(annotation.coordinates[0], annotation.label, "line", {'color':context.strokeStyle, 'p2':annotation.coordinates[1]});
+        else drawLabel(annotation.coordinates[0], annotation.label, "point", {'color':context.strokeStyle});
     }
 }
 
@@ -633,7 +742,7 @@ function drawRectangle(x, y, width, height, label, color){
  * display all the bounding boxes for current image
  */
 function getAndPrintAllBoxesForCurrentImage(){
-    context.font = labelFont;
+    context.font = options['labelFont'];
     //draw previous bounding boxes if any
     if (typeof dataset.frames[frameIndex] !== "undefined") {
         // spacial objects
@@ -645,15 +754,7 @@ function getAndPrintAllBoxesForCurrentImage(){
             }
             else if(annotation.shape === 'line'){
                 //draw every line of the annotation
-                for(var j = 0; j < annotation.coordinates.length - 1; j++){
-                    context.beginPath();
-                    context.moveTo(annotation.coordinates[j][0], annotation.coordinates[j][1]);
-                    context.lineTo(annotation.coordinates[j+1][0],annotation.coordinates[j+1][1]);
-                    context.strokeStyle = colorLine;
-                    context.stroke();
-                    context.closePath();
-                }
-                if(!sKeyDown) drawLineLabel(annotation.label, annotation.coordinates[0], annotation.coordinates[1]);
+                drawPoints(annotation);
             }
         }
         //lines which are currently drawing
@@ -662,7 +763,7 @@ function getAndPrintAllBoxesForCurrentImage(){
                 context.beginPath();
                 context.moveTo(line.coordinates[i][0], line.coordinates[i][1]);
                 context.lineTo(line.coordinates[i+1][0],line.coordinates[i+1][1]);
-                context.strokeStyle = colorLine;
+                context.strokeStyle = options['colorLine'];
                 context.stroke();
                 context.closePath();
             }
@@ -676,17 +777,17 @@ function getAndPrintAllBoxesForCurrentImage(){
         for(var j = 0; j< nTimeObjects; j++ ){
             annotation = dataset.time_annotations[j];
             if(annotation.frameStart <= frameIndex && annotation.frameEnd >= frameIndex){
-                drawRectangle(annotation.region.x, annotation.region.y, annotation.region.width, annotation.region.height, annotation.label, colorTimeBoundingBox);
+                drawRectangle(annotation.region.x, annotation.region.y, annotation.region.width, annotation.region.height, annotation.label, options['colorTimeBoundingBox']);
             }
         }
         // if we have time annotation in progress
         for(var ta = 0; ta < timeAnnotations.length; ta++ ){
             annotation = timeAnnotations[ta];
-            drawRectangle(annotation.region.x, annotation.region.y, annotation.region.width, annotation.region.height, annotation.label, colorTimeBoundingBox);
+            drawRectangle(annotation.region.x, annotation.region.y, annotation.region.width, annotation.region.height, annotation.label, options['colorTimeBoundingBox']);
         }
         // if we have in memory a temporary region
         if(temp_region != null){
-            drawRectangle(temp_region.x, temp_region.y, temp_region.width, temp_region.height, temp_region.label, colorTimeBoundingBox);
+            drawRectangle(temp_region.x, temp_region.y, temp_region.width, temp_region.height, temp_region.label, options['colorTimeBoundingBox']);
         }
     }
 } //end function getAndPrintAllBoxesForCurrentImage
@@ -763,19 +864,19 @@ function drawBoundingBox(x, y){
         refreshImage();
     }
     if(bBox.annotationType === "time_annotation"){
-        context.strokeStyle = colorTimeBoundingBox;
+        context.strokeStyle = options['colorTimeBoundingBox'];
     }
     else {
-        context.strokeStyle = colorBoundingBox;
+        context.strokeStyle = options['colorBoundingBox'];
     }
     context.stroke();
     context.closePath();
 } // end drawBoundingBox
 
 /**
- * draw line on canvas interactively while the user selects a region of interest
+ * draw line on canvas
  */
-function drawLine(x, y){
+function drawLineBetweenPoints(x, y){
 
     if(!setLoaded)
         return;
@@ -795,7 +896,7 @@ function drawLine(x, y){
         line.annotationType = spacial_settings[objectSelected].name;
         line.label = spacial_settings[objectSelected].annotations[labelSelected].label;
         pushNewAnnotation(line, 'line');
-        showMessage({'type':'success', 'message':'Annotation '+ bBox.label + ' created'});
+        showMessage({'type':'success', 'message':'Annotation '+ line.label + ' created'});
         if(spacial_settings[objectSelected].type === 'order'){
             nextAnnotationLabel();
         }
@@ -803,7 +904,7 @@ function drawLine(x, y){
         refreshImage();
     }
 
-    context.strokeStyle = colorLine;
+    context.strokeStyle = options['colorLine'];
     context.stroke();
     context.closePath();
 } // end drawBoundingBox
@@ -844,7 +945,7 @@ function setSettings(){
         if(time_settings.length == 0){
             $('#row_time_annotations').hide();
         } else {
-            $('#select_time_annotation_type').json2html(time_settings, {'<>':'option','html':'${name}', 'value':'${type}'});
+            $('#select_time_annotation_type').json2html(time_settings, {'<>':'option','html':'${group_name}', 'value':'${type}'});
             var select_time_annotation_type = document.getElementById('select_time_annotation_type');
             select_time_annotation_type.dispatchEvent(event);
             $('#row_time_annotations').show();
@@ -857,9 +958,9 @@ function setSettings(){
             $('#row_annotation_type').hide();
             $('#row_annotation_label').hide();
         } else {
-            $('#select_annotation_type').json2html(spacial_settings, {'<>':'option','html':'${name} (type : ${type})', 'value':'${type}'});
-            var select_annotation_type = document.getElementById('select_annotation_type');
-            select_annotation_type.dispatchEvent(event);
+            $('#select_annotation_group_name').json2html(spacial_settings, {'<>':'option','html':'${group_name} (type : ${type})', 'value':'${type}'});
+            var select_annotation_group_name = document.getElementById('select_annotation_group_name');
+            select_annotation_group_name.dispatchEvent(event);
             $('#row_annotation_type').show();
             $('#row_annotation_label').show();
         }
@@ -876,76 +977,76 @@ function setSettings(){
 function addListenerToCanvas(){
     // click over canvas
     canvas.addEventListener('click', function(e){
-        if((ctrlKeyDown || shiftKeyDown || dKeyDown) && (getIfCanvasFree() || temp_region)){
+        if((ctrlKeyDown || shiftKeyDown || dKeyDown || hKeyDown) && (getIfCanvasFree() || temp_region)){
+
             // is there any annotation on the current frame that is on the position of the click
-            // spacial annotations
-            var one_box_clicked = false;
             var annotation;
             //on a spatial box ?
-            for(var num_annotation = 0; num_annotation < dataset.frames[frameIndex].annotations.length; num_annotation++){
+            for (var num_annotation = 0; num_annotation < dataset.frames[frameIndex].annotations.length; num_annotation++) {
                 annotation = dataset.frames[frameIndex].annotations[num_annotation];
 
-                if(annotation.shape === 'rectangle') {
+                if (annotation.shape === 'rectangle') {
                     clickOnABox(annotation, getMousePos(e), "spatial", num_annotation);
                 }
                 else {
-                    one_box_clicked = clickOnALine(annotation, getMousePos(e));
-                    if(one_box_clicked && dKeyDown){
-                        dataset.frames[frameIndex].annotations.splice(num_annotation, 1);
-                        showMessage({'type':'success', 'message':'Box deleted'});
-                        refreshImage();
-                    }
+                    clickOnAPointOrLine(annotation, getMousePos(e), num_annotation);
                 }
 
             }
+
             // time annotation ?
             if(temp_region != null && !one_box_clicked){
                 clickOnABox(temp_region, getMousePos(e), "time");
-
             }
         }
         else if(getBoundMoving()!='none'){
             stopBoundMoving();
         }
+        else if(index_point_clicked > -1){
+            index_point_clicked = -1;
+        }
+        // when time annotation has been drawn, we wait for user to click on the button start time annotation
         else if(temp_region != null && temp_region.width != null){ //it means we are waiting for user to click on start time annotation
             showMessage({'type':'danger', 'message':'You have to start time annotation before drawing another box'});
         }
+        // if we are waiting for a time annotation to be drawn
         else if(wait_for_click){
             bBox.click();    // count the number of clicks and add coordinates
             bBox.annotationType = "time_annotation";
             drawBoundingBox(bBox.mx, bBox.my);
         }
+        // start drawing line or box
         else if(spacial_settings.length > 0){
             var shape = spacial_settings[objectSelected].annotations[labelSelected].shape;
 
             if(shape === 'rectangle'){
                 bBox.click();    // count the number of clicks and add coordinates
                 drawBoundingBox(bBox.mx, bBox.my);
-            } else if(shape.indexOf('line')>=0){
+            } else if(shape.indexOf('point')>=0){
                 // if it's first click, init junctions numbers
                 if(line.nbClicks == 0) line.nbJunctions = shape.match(/\d+/)[0];
                 line.click();
-                drawLine(line.mx, line.my);
+                drawLineBetweenPoints(line.mx, line.my);
             }
         }
-
     });
 
     canvas.addEventListener('mousemove', function(e) {
-        bBox.mx = getMousePos(e).x;
-        bBox.my = getMousePos(e).y;
-        line.mx = getMousePos(e).x;
-        line.my = getMousePos(e).y;
+        mx = Math.floor(getMousePos(e).x);
+        my = Math.floor(getMousePos(e).y);
+        bBox.mx = mx;
+        bBox.my = my;
+        line.mx = mx;
+        line.my = my;
         if(bBox.nClicks === 1){ //draw a bouding box
             drawBoundingBox(bBox.mx, bBox.my);
         }
         else if(line.nbClicks > 0){ //draw a line
-            drawLine(line.mx, line.my)
+            drawLineBetweenPoints(line.mx, line.my)
         }
         else{
             // if we are moving one bound of the box
             if(getBoundMoving() != 'none'){
-                var mouse_pos = getMousePos(e);
                 var annotation;
                 if(type_annotation_clicked === "time"){
                     annotation = temp_region;
@@ -955,53 +1056,57 @@ function addListenerToCanvas(){
                 }
                 switch (getBoundMoving()){
                     case 'all':
-                    	var x = mouse_pos.x - diff_x;
-                    	var y = mouse_pos.y - diff_y;
-                    	if(x > 0 
-                    		&& y > 0
-                    		&& x + annotation.width < canvas.width
-                    		&& y + annotation.height < canvas.height){
-                    		annotation.x = mouse_pos.x - diff_x;
-                        	annotation.y = mouse_pos.y - diff_y;
-                        	showMessage('Moving the box');
-                    	}
-                    	else{
-                    		showMessage({'type':'danger','message':'Stay in the canvas'});
-                    	}
-                        
+                        var x = mx - diff_x;
+                        var y = my - diff_y;
+                        if(x > 0
+                            && y > 0
+                            && x + annotation.width < canvas.width
+                            && y + annotation.height < canvas.height){
+                            annotation.x = mx - diff_x;
+                            annotation.y = my - diff_y;
+                            showMessage('Moving the box');
+                        }
+                        else{
+                            showMessage({'type':'danger','message':'Stay in the canvas'});
+                        }
+
                         break;
                     case 'left':
-                        if(mouse_pos.x < (info_box_before_move['x'] + info_box_before_move['width'] - line_width/2)){
-                            annotation.x = mouse_pos.x;
-                            annotation.width = info_box_before_move['x'] - mouse_pos.x + info_box_before_move['width'];
+                        if(mx < (info_box_before_move['x'] + info_box_before_move['width'] - options['line_width']/2)){
+                            annotation.x = mx;
+                            annotation.width = info_box_before_move['x'] - mx + info_box_before_move['width'];
                         }
-                        showMessage('Resizing left box bound')
+                        showMessage('Resizing left box bound');
                         break;
                     case 'right':
-                        if((info_box_before_move['x'] + line_width/2) < mouse_pos.x) {
-                            annotation.width = info_box_before_move['width'] + mouse_pos.x - (info_box_before_move['x'] + info_box_before_move['width']);
+                        if((info_box_before_move['x'] + options['line_width']/2) < mx) {
+                            annotation.width = info_box_before_move['width'] + mx - (info_box_before_move['x'] + info_box_before_move['width']);
                         }
-                        showMessage('Resizing right box bound')
+                        showMessage('Resizing right box bound');
                         break;
                     case 'upper':
-                        if(mouse_pos.y < (info_box_before_move['y'] + info_box_before_move['height'])){
-                            annotation.y = mouse_pos.y;
-                            annotation.height = info_box_before_move['y'] - mouse_pos.y + info_box_before_move['height'];
+                        if(my < (info_box_before_move['y'] + info_box_before_move['height'])){
+                            annotation.y = my;
+                            annotation.height = info_box_before_move['y'] - my + info_box_before_move['height'];
                         }
 
-                        showMessage('Resizing upper box bound')
+                        showMessage('Resizing upper box bound');
                         break;
                     case 'lower':
-                        if(mouse_pos.y > info_box_before_move['y']){
-                            annotation.height = info_box_before_move['height'] + mouse_pos.y - (info_box_before_move['y']+info_box_before_move['height']);
+                        if(my > info_box_before_move['y']){
+                            annotation.height = info_box_before_move['height'] + my - (info_box_before_move['y']+info_box_before_move['height']);
                         }
-                        showMessage('Resizing lower box bound')
+                        showMessage('Resizing lower box bound');
                         break;
                 }
-                context.drawImage(image, 0, 0, canvas.width, canvas.height); // refresh image
                 refreshImage();
             }
-
+            else if(index_point_clicked > -1){
+                annotation = dataset.frames[frameIndex].annotations[index_annotation_clicked].coordinates[index_point_clicked];
+                annotation[0] = mx;
+                annotation[1] = my;
+                refreshImage();
+            }
         }
 
     });
@@ -1019,7 +1124,6 @@ function addListenersToDocument(){
         // remember the pressed keys
         if (event.keyCode == key['shift']) shiftKeyDown = true;
         if (event.keyCode == key['h']) hKeyDown = true;
-        if (event.keyCode == key['w']) wKeyDown = true;
         if (event.keyCode == key['ctrl']) ctrlKeyDown = true;
         if (event.keyCode == key['d']) dKeyDown = true;
         if (event.keyCode == key['s']) {
@@ -1113,10 +1217,10 @@ function addListenersToDocument(){
             objectSelected++;
             if(objectSelected === spacial_settings.length)
                 objectSelected = 0;
-            var select_annotation_type = document.getElementById('select_annotation_type');
+            var select_annotation_group_name = document.getElementById('select_annotation_group_name');
             var event = new Event('change');
-            select_annotation_type.selectedIndex = objectSelected;
-            select_annotation_type.dispatchEvent(event);
+            select_annotation_group_name.selectedIndex = objectSelected;
+            select_annotation_group_name.dispatchEvent(event);
             showMessage(spacial_settings[objectSelected].name + ' selected');
         }
         //select next time annotation 'e' key
@@ -1155,7 +1259,6 @@ function addListenersToDocument(){
 
     document.addEventListener('keyup', function(event){
         if (event.keyCode == key['h']) hKeyDown = false;
-        if (event.keyCode == key['w']) wKeyDown = false;
         if (event.keyCode == key['ctrl']) ctrlKeyDown = false;
         if (event.keyCode == key['shift']) shiftKeyDown = false;
         if (event.keyCode == key['d']) dKeyDown = false;
@@ -1339,8 +1442,8 @@ function addListenerToSelects(){
     });
 
     // changes in the list of annotation types
-    $('#select_annotation_type').change( function (){
-        objectSelected = $("#select_annotation_type option:selected").index() < 0 ? 0 : $("#select_annotation_type option:selected").index(); //if no option selected we force it
+    $('#select_annotation_group_name').change( function (){
+        objectSelected = $("#select_annotation_group_name option:selected").index() < 0 ? 0 : $("#select_annotation_group_name option:selected").index(); //if no option selected we force it
         if(spacial_settings[objectSelected].type != 'unique'){
             $('#select_annotation_label').html(""); //clear drop down list
             $('#select_annotation_label').json2html(spacial_settings[objectSelected].annotations, {'<>':'option','html': '${label} (shape : ${shape})', 'value':'${label}'});

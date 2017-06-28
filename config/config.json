@@ -1,6 +1,36 @@
 [
-   {
-    "name" : "Persons",
+  {
+    "group_name" : "Dev",
+    "type" : "multiple",
+    "annotations" :
+    [
+      {
+        "shape": "1 point",
+        "label" : "Shoulders"
+
+      },
+      {
+        "shape": "3 points",
+        "label" : "Left Arm"
+      },
+      {
+        "shape": "rectangle",
+        "label" : "Head"
+
+      },
+      {
+        "shape": "rectangle",
+        "label" : "Torso"
+      },
+      {
+        "shape": "3 points",
+        "label" : "Right arm"
+      }
+
+    ]
+  },
+  {
+    "group_name" : "Persons",
     "type" : "order",
     "annotations" :
     [
@@ -14,18 +44,18 @@
         "label" : "Torso"
       },
       {
-        "shape": "line3",
+        "shape": "3 points",
         "label" : "Right arm"
 
       },
       {
-        "shape": "line-3",
+        "shape": "3 points",
         "label" : "Left Arm"
       }
     ]
   },
   {
-    "name" : "Person",
+    "group_name" : "Person",
     "type" : "unique",
     "annotations" :
     [
@@ -37,7 +67,7 @@
     ]
   },
   {
-    "name" : "Movement",
+    "group_name" : "Movement",
     "type" : "time",
     "annotations" :
     [

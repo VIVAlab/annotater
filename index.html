@@ -9,7 +9,7 @@
     <title>Annotation Tool</title>
 
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="css/starter-template.css" rel="stylesheet">
+    <link href="css/annotater.css" rel="stylesheet">
 </head>
 
 <body>
@@ -18,11 +18,11 @@
 <div class="container-fluid">
     <div class="starter-template">
         <div class="col-md-8">
-            <h1>Annotator</h1><hr>
+            <h3>Annotator</h3><hr>
             <div class="row">
                 <!-- drop down list to show datasets  -->
                 <div class="col-md-4">
-                    <h3>Sources</h3>
+                    <h4>Sources</h4>
                     <div class="form-group">
                         <select id="select" class="form-control"></select>
                     </div>
@@ -31,8 +31,8 @@
                 <div id="row_annotation_type" class="col-md-4">
                     <div class="form-group">
                         <div id="annotation_type">
-                            <h3>Annotations name</h3>
-                            <select id="select_annotation_type" class="form-control"></select>
+                            <h4>Group name</h4>
+                            <select id="select_annotation_group_name" class="form-control"></select>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                 <div id="row_annotation_label" class="col-md-4">
                     <div class="form-group">
                         <div id="annotation_label">
-                            <h3>Annotation label</h3>
+                            <h4>Label</h4>
                             <select id="select_annotation_label" class="form-control"></select>
                         </div>
                     </div>
@@ -74,179 +74,161 @@
 
         </div>
 
+        <!-- Side menu -->
         <div class="col-md-4 bordered">
             <!-- keyboard shortcut -->
-            <div class="row">
-                <div id="accordion" role="tablist" aria-multiselectable="true">
-                    <div class="card">
-                        <div class="card-header" role="tab">
-                            <h3 class="mb-0">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#keyboard_ref" aria-expanded="true" aria-controls="collapseOne">
-                                    Keyboard shortcuts reference
-                                </a>
-                            </h3>
-                        </div>
-                        <div id="keyboard_ref" class="collapse">
-                            <table class="table_shortcuts">
-                                <tr>
-                                    <td>&#8678;/&#8680; or mouse wheel</td>
-                                    <td>Previous/next frame</td>
-                                </tr>
-                                <tr>
-                                    <td>&Uarr; (pgUp)</td>
-                                    <td>&uarr; 50 frames</td>
-                                </tr>
-                                <tr>
-                                    <td>&Darr; (pgDown)</td>
-                                    <td>&darr; 50 frames</td>
-                                </tr>
-                                <tr>
-                                    <td>a</td>
-                                    <td>Next annotation type</td>
-                                </tr>
-                                <tr>
-                                    <td>z</td>
-                                    <td>Next annotation label</td>
-                                </tr>
-                                <tr>
-                                    <td>e</td>
-                                    <td>Next time annotation label</td>
-                                </tr>
-                                <tr>
-                                    <td>u</td>
-                                    <td>Undo last annotation step</td>
-                                </tr>
-                                <tr>
-                                    <td>c</td>
-                                    <td>Clear annotations in current frame</td>
-                                </tr>
-                                <tr>
-                                    <td>d + click</td>
-                                    <td>Delete the box</td>
-                                </tr>
-                                <tr>
-                                    <td>s</td>
-                                    <td>Show/hide labels</td>
-                                </tr>
-                                <tr>
-                                    <td>r</td>
-                                    <td>Recopy annotations from previous frame</td>
-                                </tr>
-                                <tr>
-                                    <td>esc</td>
-                                    <td>Stop the current drawing</td>
-                                </tr>
-                                <tr>
-                                    <td>shift + mouse</td>
-                                    <td>Resize box</td>
-                                </tr>
-                                <tr>
-                                    <td>ctrl + mouse</td>
-                                    <td>Move the box</td>
-                                </tr>
-                            </table>
-                            <div class="row">
-                                <br>
-                            </div>
-                        </div>
-                        <!-- collapse-->
+            <div class="card">
+                <div class="card-header" role="tab">
+                    <h4><a data-toggle="collapse" href="#keyboard_ref">Keyboard shortcuts reference</a></h4>
+                </div>
+
+                <div id="keyboard_ref" class="collapse">
+                    <table class="table_shortcuts">
+                        <tr>
+                            <td>&#8678;/&#8680; or mouse wheel</td>
+                            <td>Previous/next frame</td>
+                        </tr>
+                        <tr>
+                            <td>&Uarr; (pgUp)</td>
+                            <td>&uarr; 50 frames</td>
+                        </tr>
+                        <tr>
+                            <td>&Darr; (pgDown)</td>
+                            <td>&darr; 50 frames</td>
+                        </tr>
+                        <tr>
+                            <td>a</td>
+                            <td>Next annotation type</td>
+                        </tr>
+                        <tr>
+                            <td>z</td>
+                            <td>Next annotation label</td>
+                        </tr>
+                        <tr>
+                            <td>e</td>
+                            <td>Next time annotation label</td>
+                        </tr>
+                        <tr>
+                            <td>u</td>
+                            <td>Undo last annotation step</td>
+                        </tr>
+                        <tr>
+                            <td>c</td>
+                            <td>Clear annotations in current frame</td>
+                        </tr>
+
+                        <tr>
+                            <td>s</td>
+                            <td>Show/hide labels</td>
+                        </tr>
+                        <tr>
+                            <td>r</td>
+                            <td>Recopy annotations from previous frame</td>
+                        </tr>
+                        <tr>
+                            <td>esc</td>
+                            <td>Stop the current drawing</td>
+                        </tr>
+                        <tr>
+                            <td>h + click</td>
+                            <td>Toggle hidden annotation flag</td>
+                        </tr>
+                        <tr>
+                            <td>d + click</td>
+                            <td>Delete the box</td>
+                        </tr>
+                        <tr>
+                            <td>shift + click</td>
+                            <td>Resize box</td>
+                        </tr>
+                        <tr>
+                            <td>ctrl + click</td>
+                            <td>Move the box</td>
+                        </tr>
+                    </table>
+                    <div class="row">
+                        <br>
                     </div>
                 </div>
-                <hr>
+                <!-- collapse-->
             </div>
+            <hr>
             <!-- end keyboard shortcut -->
 
             <!-- Download and upload -->
-            <div class="row">
-                <div id="accordion2" role="tablist" aria-multiselectable="true">
-                    <div class="card">
-                        <div class="card-header" role="tab">
-                            <h3 class="mb-0">
-                                <a data-toggle="collapse" data-parent="#accordion2" href="#setup_parameters" aria-expanded="true" aria-controls="collapseOne">
-                                    Settings
-                                </a>
-                            </h3>
-                        </div>
-
-                        <div id="setup_parameters" class="collapse">
-                            <div class="card-block">
-                                <table>
-                                    <tr>
-                                        <td>Upload Annotations </td>
-                                        <td><input id="upload" type="file" class="form-control input-md"></td>
-                                    </tr>
-                                    <tr><td><p></p></td></tr> <!-- Blank line-->
-                                    <tr>
-                                        <td>Download annotations </td>
-                                        <td>
-                                            <div class="input-group">
-                                                <div class="input-group-btn">
-                                                    <a id="download" href="#" class="btn btn-default"><i class="glyphicon glyphicon-download"></i></a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <!-- upload previous annotations -->
-
-                            </div>
-
-
-                        </div> <!--collapse-->
-                    </div>
+            <div class="card">
+                <div class="card-header" role="tab">
+                    <h4><a data-toggle="collapse" href="#setup_parameters">Settings</a></h4>
                 </div>
-                <hr>
+
+                <div id="setup_parameters" class="collapse">
+                    <div class="card-block">
+                        <table>
+                            <tr>
+                                <td>Upload Annotations </td>
+                                <td><input id="upload" type="file" class="form-control input-md"></td>
+                            </tr>
+                            <tr><td><p></p></td></tr> <!-- Blank line-->
+                            <tr>
+                                <td>Download annotations </td>
+                                <td>
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <a id="download" href="#" class="btn btn-default"><i class="glyphicon glyphicon-download"></i></a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- upload previous annotations -->
+
+                    </div>
+
+
+                </div> <!--collapse-->
             </div>
+            <hr>
             <!-- end download and upload -->
 
             <!-- Time annotation -->
-            <div id="row_time_annotations" class="row">
-                <div id="accordion3" role="tablist" aria-multiselectable="true">
-                    <div class="card">
-                        <div class="card-header" role="tab">
-                            <h3 class="mb-0">
-                                <a data-toggle="collapse" data-parent="#accordion3" href="#time_annotation" aria-expanded="true" aria-controls="collapseOne">
-                                    Time annotation
-                                </a>
-                            </h3>
-                        </div>
-
-                        <div id="time_annotation" class="collapse">
-                            <!-- drop down list to show objects  -->
-                            <div class="row">
-                                <div class="form-group">
-                                    <div class="col-sm-6">
-                                        <label for="select_time_annotation_type">Chose your category of time annotations</label>
-                                        <select id="select_time_annotation_type" class="form-control"></select>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="select_time_annotation_label">Chose your time annotation</label>
-                                        <select id="select_time_annotation_label" class="form-control "></select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group centered col-sm-6">
-                                    <div class="form-group">
-                                        <label for="start_box_time_annotation">Click to associate time annotation to a box</label>
-                                        <button id="start_box_time_annotation" type="button" class="btn btn-primary">Start drawing</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- button -->
-                            <div class="row">
-                                <div class="form-group">
-                                    <button id="start_time_annotation" type="button" class="btn btn-success"></button>
-                                </div>
-                            </div>
-
-                            <div id="time_annotations_in_progress"></div>
-                        </div> <!--collapse-->
-                    </div>
+            <div id="row_time_annotations" class="card">
+                <div class="card-header" role="tab">
+                    <h4><a data-toggle="collapse" href="#time_annotation">Time annotation</a></h4>
                 </div>
+
+                <div id="time_annotation" class="collapse">
+                    <!-- drop down list to show objects  -->
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                <label for="select_time_annotation_type">Group name</label>
+                                <select id="select_time_annotation_type" class="form-control"></select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="select_time_annotation_label">Time annotation</label>
+                                <select id="select_time_annotation_label" class="form-control "></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group centered col-sm-6">
+                            <div class="form-group">
+                                <label for="start_box_time_annotation">Click to associate time annotation to a region</label>
+                                <button id="start_box_time_annotation" type="button" class="btn btn-primary">Start drawing</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- button -->
+                    <div class="row">
+                        <div class="form-group">
+                            <button id="start_time_annotation" type="button" class="btn btn-success"></button>
+                        </div>
+                    </div>
+
+                    <div id="time_annotations_in_progress"></div>
+                </div> <!--collapse-->
             </div>
             <!-- end time annotation -->
-
         </div> <!--col-md-4-->
     </div> <!--tamplate-->
 </div> <!-- container -->
