@@ -7,9 +7,8 @@ var temp_region     = null; // temporary region used for time annotation
 var frameIndex       = -1;
 var timeAnnotations = []; // contains time annotations that are not yet finished (don't have any frame end)
 var timeLabelSelected = 0, timeObjectSelected = 0, labelSelected = 0, objectSelected = 0;
-var key              =  {'a': 65,'s':83,'d':68,'e':69,'h':72,'z':90,'r':82,'left':37,'right':39,'u':85,'esc':27,'pgup':33,'pgdn':34,'ctrl':17,'shift':16};
-var spacial_settings = [];
-var time_settings = [];
+var key              =  {'a': 65,'c':67,'s':83,'d':68,'e':69,'h':72,'z':90,'r':82,'left':37,'right':39,'u':85,'esc':27,'pgup':33,'pgdn':34,'ctrl':17,'shift':16};
+var spacial_settings = [], time_settings = [], multilabels = [];
 var shiftKeyDown, ctrlKeyDown, dKeyDown, sKeyDown, hKeyDown;
 var info_box_before_move = {};
 var bound_moving = {'left':false, 'right':false, 'lower':false, 'upper':false, 'all':false};
@@ -18,7 +17,7 @@ var type_annotation_clicked = ""; //For resizing of moving box
 var index_annotation_clicked = -1;//For resizing of moving box
 var diff_x, diff_y;
 var wait_for_click;
-var auto_creation = false;
+var auto_creation = false, auto_multilabels = false;
 
 // var changables :
 var options = {
@@ -567,7 +566,18 @@ function addTimeAnnotation(anAnnotation){
  * Push a new annotation
  */
 function pushNewAnnotation(anAnnotation, type){
-    var annotation;
+    var annotation = {};
+    var assign_multilabels = [];
+    if(auto_multilabels){
+        multilabels.forEach(label => {
+            assign_multilabels.push(d
+                {
+                    'category'  : label.category,
+                    'value'     : $('#select_'+label.category).val()
+                }
+            )
+        });
+    }
     switch (type){
         case 'line':
             annotation = {
@@ -575,9 +585,11 @@ function pushNewAnnotation(anAnnotation, type){
                 'junctions_number'  : anAnnotation.nbJunctions,
                 'type'              : anAnnotation.annotationType,
                 'label'             : anAnnotation.label,
+                'multilabels'       : assign_multilabels,
                 'hidden'            : false,
                 'coordinates'       : anAnnotation.coordinates
             };
+
             dataset.frames[frameIndex].annotations.push(annotation);
             break;
         case 'box':
@@ -585,6 +597,7 @@ function pushNewAnnotation(anAnnotation, type){
                 'shape'     : 'rectangle',
                 'type'      : anAnnotation.annotationType,
                 'label'     : anAnnotation.label,
+                'multilabels' : assign_multilabels,
                 'x'         : anAnnotation.coordinates[0],
                 'y'         : anAnnotation.coordinates[1],
                 'width'     : anAnnotation.coordinates[2],
@@ -599,6 +612,7 @@ function pushNewAnnotation(anAnnotation, type){
                 'frameEnd'      :   anAnnotation.frameEnd,
                 'type'          :   anAnnotation.annotationType,
                 'label'         :   anAnnotation.label,
+                'multilabels'   : assign_multilabels,
                 'region'        :   anAnnotation.region
             };
             dataset.time_annotations.push(annotation);
@@ -846,7 +860,7 @@ function drawBoundingBox(x, y){
             saveTemporarilyRegion(bBox);
         }
         else {
-            bBox.annotationType = spacial_settings[objectSelected].name;
+            bBox.annotationType = spacial_settings[objectSelected].type;
 
             if(spacial_settings[objectSelected].type === 'unique'){
                 bBox.label = spacial_settings[objectSelected].annotations[0].label;
@@ -926,7 +940,7 @@ function loadDatasetsInfo(){
  * Load settings
  */
 function setSettings(){
-    // read json file
+    // read config json file
     $.getJSON(sprintf("./config/config.json?q=$f", Math.random()), function(configData)
     {
         // load spacial and time settings
@@ -963,12 +977,42 @@ function setSettings(){
             select_annotation_group_name.dispatchEvent(event);
             $('#row_annotation_type').show();
             $('#row_annotation_label').show();
+
         }
         // end spacial annotations
 
         var select = document.getElementById('select');
         select.dispatchEvent(event);
     });
+    // read if multilabels are activated
+    $.getJSON(sprintf("./config/multilabels.json?q=$f", Math.random()), function(data) {
+        data.forEach(multilabel => {
+            multilabels.push(multilabel);
+        });
+        // if yes, create new selects for each category
+        if(multilabels.length > 0){
+            //var html  = '<div class="btn-group" data-toggle="buttons"><label id="label_multilabels" class="btn btn-danger">';
+            //html += '<input  id="multilabels" type="checkbox" autocomplete="off">Multilabels ? :';
+            //html += '<span id="span_multilabels" class="glyphicon glyphicon-remove"></span></label></div>';
+
+            var html  = $('#selects_multilabels').html();
+            multilabels.forEach(multilabel => {
+                multilabel.category = multilabel.category.replace(/\s+/g, '');
+                html += '<h3>' +  multilabel.category + '</h3>';
+                html += '<select id="select_'+ multilabel.category +'" class="form-control">';
+                // and add each options for this category
+                multilabel.options.forEach(option => {
+                    html += '<option value="' + option + '">' + option + '</option>';
+                });
+                html += '</select>';
+            });
+            $('#selects_multilabels').html(html);
+        }
+        else {
+            $('#div_multilabels').hide();
+        }
+    });
+
 } // end load settings
 
 /**
@@ -1311,16 +1355,29 @@ function addListenersToDocument(){
 
     });
 
-    $('#auto_create_box').change(function(){
+    $('#checkbox_auto_create_box').change(function(){
         if($(this).is(':checked')){
             auto_creation = true;
-            $('#span_auto_create_box').attr("class","glyphicon glyphicon-ok");
-            $('#label_auto_create_box').attr("class","btn btn-success active");
+            $('#span_auto_create_box').attr("class", "glyphicon glyphicon-ok");
+            $('#label_auto_create_box').attr("class", "btn btn-success active");
         }
         else {
             auto_creation = false;
-            $('#span_auto_create_box').attr("class","glyphicon glyphicon-remove");
-            $('#label_auto_create_box').attr("class","btn btn-danger");
+            $('#span_auto_create_box').attr("class", "glyphicon glyphicon-remove");
+            $('#label_auto_create_box').attr("class", "btn btn-danger");
+        }
+    });
+
+    $('#checkbox_multilabels').change(function(){
+        if($(this).is(':checked')){
+            auto_multilabels = true;
+            $('#span_multilabels').attr("class", "glyphicon glyphicon-ok");
+            $('#label_multilabels').attr("class", "btn btn-success active");
+        }
+        else {
+            auto_multilabels = false;
+            $('#span_multilabels').attr("class", "glyphicon glyphicon-remove");
+            $('#label_multilabels').attr("class", "btn btn-danger");
         }
     });
 
@@ -1425,6 +1482,9 @@ function addListenerToSelects(){
             $('#annotation_type').show();
             $('#annotation_label').show();
             $('#auto_creation').show();
+            $('#div_multilabels').show();
+            $('#div_auto_create_box').show();
+
         } else {
             frameIndex = -1;
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -1433,6 +1493,9 @@ function addListenerToSelects(){
             $('#annotation_type').hide();
             $('#annotation_label').hide();
             $('#auto_creation').hide();
+            $('#div_multilabels').hide();
+            $('#div_auto_create_box').hide();
+
         }
     });
 

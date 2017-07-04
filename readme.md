@@ -1,22 +1,26 @@
 # Annotater tool
 ## Introduction
-This tool allows to annotate frames. It can annotate spacially but also temporally.
+This tool allows to annotate frames (spacial and temporal annotations).
 
-## Configure files 
-To configure your files, go in _config/_ folder :  
 
-#### - config.json :
+## Customize the software
+#### config.json :
 Contains the annotations available from the web page.  
-**_name_ :** name of the group of annotations  
-**_type_ :** type of the annotations. You can choose between 3 : order, multiple, unique  
-**_shape_ :** the shape can be either rectangle or line x with x the number of points you want. For example, for an arm : line 3.   
+* **group_name :** name of the group of annotations  
+* **label :** label of the annotation
+* **type :** type of the annotations. You can choose between 3 : order, multiple, unique  
+* **shape :** the shape can be either rectangle or line x with x the number of points you want. For example, for an arm : line 3.   
 You can type line 3, line3, line-3 or anything else  
-**_label_ :** label of the annotation
 
-#### - datasets.json :
-Contains links to the frames  
+#### multilabels.json :
+If you need to add multiple labels to one annotation, you can configure this file :  
+* **category :** gender / age / ...
+* **options :** array containing values available
 
-## Python files
+#### datasets.json :
+Contains paths to frames  
+
+## Add a new dataset
 If you want to add a new dataset please do this : 
 1) Create a new folder in the data folder with the name you want
 2) Paste in the folder you've created all your images
