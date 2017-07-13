@@ -10,8 +10,8 @@ function socket_init(){
     socket = io.connect('http://localhost:8081');
 
     //add listeners to socket event
-    socket.on('new frame', function(data){
-        newTrackedBox(data);
+    socket.on('new frame', function(new_coord, data){
+        newTrackedBox(new_coord, data);
     });
 }
 

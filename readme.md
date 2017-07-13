@@ -26,3 +26,27 @@ The index.html is the _view_ folder. The extension is .hbs because you can pass 
 **C++ files**  
 _cpp_ folder contains files used by the server. The _binding.gyp_ is needed to compile the _main.cpp_. If you change something run `node-gyp configure`. When configuration is done, run `node-gyp build` and it'll build an executable file in _./build/Release/_ with the target name of the _binding.gyp_
  
+ 
+### Installation
+Please follow these steps :
+1. 
+    `sudo apt-get install python-software-properties python g++ make`  
+    `sudo add-apt-repository ppa:chris-lea/node.js`  
+    `sudo apt-get update`  
+    `sudo apt-get install nodejs`  
+
+    Be sure nodejs was correctly installed by running `node -v`
+ 
+2. Follow this tutorial to install opencv with cmake http://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html
+
+3. Clone this git repository : `git clone -b opencv https://github.com/VIVAlab/annotater.git`  
+
+4. Now we need to indicate to node-gyp the path file :
+    `cd annotater/cpp`  
+    `node-gyp configure`  
+    If this worked, you can go to next step and type :
+    `node-gyp build` whichi is going to compile our c++ files and create a executable file in build/Release/
+    
+5. Once it's done, you can start the server :  
+    `cd ..`  
+    `npm run start`

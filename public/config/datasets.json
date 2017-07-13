@@ -8,19 +8,15 @@
     "url": "data/goose/data.json"
   },
   {
-    "name": "video0",
-    "url": "data/video0/data.json"
-  },
-  {
-    "name": "video1",
-    "url": "data/video1/data.json"
+    "name": "cafetaria",
+    "url": "data/cafetaria/data.json"
   },
   {
     "name": "2017-05-29/0",
     "url": "data/2017-05-29/0/data.json"
   },
   {
-    "name": "test",
-    "url": "data/test/data.json"
+    "name": "iwatchlife/20170626",
+    "url": "data/iwatchlife/20170626/data.json"
   }
 ]

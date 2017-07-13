@@ -1,49 +1,25 @@
 [
    {
-    "name" : "Persons",
-    "type" : "order",
+    "group_name" : "opencv",
+    "type" : "multiple",
     "annotations" :
     [
       {
         "shape": "rectangle",
-        "label" : "Head"
+        "label" : "Truck"
 
       },
       {
         "shape": "rectangle",
-        "label" : "Torso"
+        "label" : "Car"
       },
       {
-        "shape": "line3",
-        "label" : "Right arm"
-
+        "shape": "rectangle",
+        "label" : "Human"
       },
       {
-        "shape": "line-3",
-        "label" : "Left Arm"
-      }
-    ]
-  },
-  {
-    "name" : "opencv",
-    "type" : "unique",
-    "annotations" :
-    [
-      {
         "shape": "rectangle",
-        "label" : "Person"
-
-      }
-    ]
-  },
-  {
-    "name" : "Movement",
-    "type" : "time",
-    "annotations" :
-    [
-      {
-        "shape": "rectangle",
-        "label" : "Doing nothing"
+        "label" : "Animal"
       }
     ]
   }

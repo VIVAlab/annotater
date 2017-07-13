@@ -1,10 +1,4 @@
 #!/usr/bin/python
-
-# Generates json file to use with the annotate web tool
-#
-#
-# Author: Andres Solis Montero
-
 import argparse
 import json
 import glob
@@ -19,6 +13,7 @@ parser.add_argument('-o', '--output', default="data.json", type=str, help='outpu
 parser.add_argument('-m', '--merge', type=str, help="json with annotations too keep")
 parser.add_argument('-u', '--update', action='store_true', help="update current data.json in folder")
 args = parser.parse_args()
+
 
 if args.update and len(args.folders) == 1:
     args.merge = join(args.folders[0], 'data.json')
