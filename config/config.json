@@ -69,13 +69,29 @@
     ]
   },
   {
-    "group_name" : "Movement",
+    "group_name" : "Subway",
     "type" : "time",
     "annotations" :
     [
       {
         "shape": "rectangle",
-        "label" : "Doing nothing"
+        "label" : "Paying"
+      },
+      {
+        "shape": "rectangle",
+        "label" : "Receiving"
+      },
+      {
+        "shape": "rectangle",
+        "label" : "Picking up"
+      },
+      {
+        "shape": "rectangle",
+        "label" : "Inspecting"
+      },
+      {
+        "shape": "rectangle",
+        "label" : "Leaving"
       }
     ]
   }

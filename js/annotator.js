@@ -7,7 +7,7 @@ var temp_region     = null; // temporary region used for time annotation
 var frameIndex       = -1;
 var timeAnnotations = []; // contains time annotations that are not yet finished (don't have any frame end)
 var timeLabelSelected = 0, timeObjectSelected = 0, labelSelected = 0, objectSelected = 0;
-var key              =  {'a': 65,'c':67,'s':83,'d':68,'e':69,'h':72,'z':90,'r':82,'left':37,'right':39,'u':85,'esc':27,'pgup':33,'pgdn':34,'ctrl':17,'shift':16};
+var key              =  {'a': 65,'c':67,'d':68,'e':69,'h':72,'p':80,'u':85,'r':82,'s':83,'z':90,'left':37,'right':39,'esc':27,'pgup':33,'pgdn':34,'ctrl':17,'shift':16};
 var spacial_settings = [], time_settings = [], multilabels = [];
 var shiftKeyDown, ctrlKeyDown, dKeyDown, sKeyDown, hKeyDown;
 var info_box_before_move = {};
@@ -74,9 +74,10 @@ function stateLine(){
     this.label          = 'default';
     this.annotationType = 'default';
     this.nbJunctions    = 0;
-    this.click = function (){
+    this.click = function (isVisible = true){
         this.nbClicks++;
-        this.coordinates.push([this.mx, this.my]);
+        if(isVisible) this.coordinates.push([this.mx, this.my]);
+        else this.coordinates.push([-1,-1]);
     };
     this.getLastCoordinates = function(){
         var index = this.coordinates.length;
@@ -570,7 +571,7 @@ function pushNewAnnotation(anAnnotation, type){
     var assign_multilabels = [];
     if(auto_multilabels){
         multilabels.forEach(label => {
-            assign_multilabels.push(d
+            assign_multilabels.push(
                 {
                     'category'  : label.category,
                     'value'     : $('#select_'+label.category).val()
@@ -583,8 +584,8 @@ function pushNewAnnotation(anAnnotation, type){
             annotation = {
                 'shape'             : 'line',
                 'junctions_number'  : anAnnotation.nbJunctions,
-                'type'              : anAnnotation.annotationType,
                 'label'             : anAnnotation.label,
+                'group_name'       : anAnnotation.group_name,
                 'multilabels'       : assign_multilabels,
                 'hidden'            : false,
                 'coordinates'       : anAnnotation.coordinates
@@ -594,14 +595,14 @@ function pushNewAnnotation(anAnnotation, type){
             break;
         case 'box':
             annotation = {
-                'shape'     : 'rectangle',
-                'type'      : anAnnotation.annotationType,
-                'label'     : anAnnotation.label,
-                'multilabels' : assign_multilabels,
-                'x'         : anAnnotation.coordinates[0],
-                'y'         : anAnnotation.coordinates[1],
-                'width'     : anAnnotation.coordinates[2],
-                'height'    : anAnnotation.coordinates[3]
+                'shape'             : 'rectangle',
+                'label'             : anAnnotation.label,
+                'group_name'       : anAnnotation.group_name,
+                'multilabels'       : assign_multilabels,
+                'x'                 : anAnnotation.coordinates[0],
+                'y'                 : anAnnotation.coordinates[1],
+                'width'             : anAnnotation.coordinates[2],
+                'height'            : anAnnotation.coordinates[3]
             };
             dataset.frames[frameIndex].annotations.push(annotation);
             break;
@@ -612,8 +613,13 @@ function pushNewAnnotation(anAnnotation, type){
                 'frameEnd'      :   anAnnotation.frameEnd,
                 'type'          :   anAnnotation.annotationType,
                 'label'         :   anAnnotation.label,
-                'multilabels'   : assign_multilabels,
-                'region'        :   anAnnotation.region
+                'multilabels'   :   assign_multilabels,
+                'region'        :   {
+                    "x": anAnnotation.region.x,
+                    "y": anAnnotation.region.y,
+                    "width": anAnnotation.region.width,
+                    "height": anAnnotation.region.height,
+                }
             };
             dataset.time_annotations.push(annotation);
     }
@@ -640,59 +646,61 @@ function saveTemporarilyRegion(bb){
  */
 function drawLabel(p1, label, type, params = {}){
     var x = p1[0], y = p1[1];
-    if(type === "rectangle"){
-        // draw the background rectangle
-        context.beginPath();
-        context.fillStyle = 'white';
-        context.fillRect(x, y - options['spaceLabel']/2, context.measureText(label).width, -20);
-        context.stroke();
-        context.closePath();
+    if(x > 0 && y > 0){
+        if(type === "rectangle"){
+            // draw the background rectangle
+            context.beginPath();
+            context.fillStyle = 'white';
+            context.fillRect(x, y - options['spaceLabel']/2, context.measureText(label).width, -20);
+            context.stroke();
+            context.closePath();
 
-        //draw the text
-        context.beginPath();
-        context.fillStyle = typeof params.color != 'undefined' ? params.color : options['colorBoundingBox'];
-        context.fillText(label, x, y - options['spaceLabel']);
-        context.stroke();
-        context.closePath();
-    }
-    else if(type === "point"){
-        var space = options['spaceLabel']*3;
-        // draw the background rectangle
-        context.beginPath();
-        context.fillStyle = 'white';
-        context.fillRect(x - context.measureText(label).width/2, y - space + 3, context.measureText(label).width, -20);
-        context.stroke();
-        context.closePath();
+            //draw the text
+            context.beginPath();
+            context.fillStyle = typeof params.color != 'undefined' ? params.color : options['colorBoundingBox'];
+            context.fillText(label, x, y - options['spaceLabel']);
+            context.stroke();
+            context.closePath();
+        }
+        else if(type === "point"){
+            var space = options['spaceLabel']*3;
+            // draw the background rectangle
+            context.beginPath();
+            context.fillStyle = 'white';
+            context.fillRect(x - context.measureText(label).width/2, y - space + 3, context.measureText(label).width, -20);
+            context.stroke();
+            context.closePath();
 
-        //draw the text
-        context.beginPath();
-        context.fillStyle =  typeof params.color != 'undefined' ? params.color : options['colorLine'];
-        context.fillText(label, x - context.measureText(label).width/2, y - space);
-        context.stroke();
-        context.closePath();
-    }
-    else if(type === "line"){
-        //draw label along a line
-        var dx = params['p2'][0] - x;
-        var dy = params['p2'][1] - y;
-        var padding = 2;
-        var pad = padding / Math.sqrt(dx*dx+dy*dy);
+            //draw the text
+            context.beginPath();
+            context.fillStyle =  typeof params.color != 'undefined' ? params.color : options['colorLine'];
+            context.fillText(label, x - context.measureText(label).width/2, y - space);
+            context.stroke();
+            context.closePath();
+        }
+        else if(type === "line"){
+            //draw label along a line
+            var dx = params['p2'][0] - x;
+            var dy = params['p2'][1] - y;
+            var padding = 2;
+            var pad = padding / Math.sqrt(dx*dx+dy*dy);
 
-        context.save();
+            context.save();
 
-        context.textAlign = 'left';
-        context.translate(x + dx*pad, y + dy*pad);
-        context.rotate(Math.atan2(dy,dx));
+            context.textAlign = 'left';
+            context.translate(x + dx*pad, y + dy*pad);
+            context.rotate(Math.atan2(dy,dx));
 
-        context.fillStyle = 'white';
-        context.beginPath();
-        context.fillRect(0, 0, context.measureText(label).width, -20);
-        context.closePath();
-        context.stroke();
+            context.fillStyle = 'white';
+            context.beginPath();
+            context.fillRect(0, 0, context.measureText(label).width, -20);
+            context.closePath();
+            context.stroke();
 
-        context.fillStyle =  typeof params.color != 'undefined' ? params.color :options['colorLine'];
-        context.fillText(label, 0, 0);
-        context.restore();
+            context.fillStyle =  typeof params.color != 'undefined' ? params.color :options['colorLine'];
+            context.fillText(label, 0, 0);
+            context.restore();
+        }
     }
 }
 
@@ -731,19 +739,23 @@ function drawPoints(annotation){
     }
 
     for(var i = 0; i < annotation.coordinates.length; i++){
-        context.beginPath();
-        context.arc(annotation.coordinates[i][0], annotation.coordinates[i][1], options['circle_diameter'], 0, Math.PI*2, true);
-        context.fill();
-        context.closePath();
+        if(annotation.coordinates[i][0] > 0){
+            context.beginPath();
+            context.arc(annotation.coordinates[i][0], annotation.coordinates[i][1], options['circle_diameter'], 0, Math.PI*2, true);
+            context.fill();
+            context.closePath();
+        }
     }
 
     //and then, if necessary, draw lines between the points
     for(var j = 0; j < annotation.coordinates.length - 1; j++){
-        context.beginPath();
-        context.moveTo(annotation.coordinates[j][0], annotation.coordinates[j][1]);
-        context.lineTo(annotation.coordinates[j+1][0],annotation.coordinates[j+1][1]);
-        context.stroke();
-        context.closePath();
+        if(annotation.coordinates[j][0] > 0 && annotation.coordinates[j+1][0] > 0) {
+            context.beginPath();
+            context.moveTo(annotation.coordinates[j][0], annotation.coordinates[j][1]);
+            context.lineTo(annotation.coordinates[j + 1][0], annotation.coordinates[j + 1][1]);
+            context.stroke();
+            context.closePath();
+        }
     }
 
     if(!sKeyDown) {
@@ -774,12 +786,14 @@ function getAndPrintAllBoxesForCurrentImage(){
         //lines which are currently drawing
         if(line.nbClicks > 0){
             for(i = 0; i < line.coordinates.length - 1; i++){
-                context.beginPath();
-                context.moveTo(line.coordinates[i][0], line.coordinates[i][1]);
-                context.lineTo(line.coordinates[i+1][0],line.coordinates[i+1][1]);
-                context.strokeStyle = options['colorLine'];
-                context.stroke();
-                context.closePath();
+                if(line.coordinates[i][0] > 0 && line.coordinates[i+1][0] > 0){
+                    context.beginPath();
+                    context.moveTo(line.coordinates[i][0], line.coordinates[i][1]);
+                    context.lineTo(line.coordinates[i+1][0],line.coordinates[i+1][1]);
+                    context.strokeStyle = options['colorLine'];
+                    context.stroke();
+                    context.closePath();
+                }
             }
         }
         //end spatial objects
@@ -837,7 +851,7 @@ function drawBoundingBox(x, y){
         var heightBB =  y - bBox.coordinates[1];
         refreshImage();
         context.rect(bBox.coordinates[0], bBox.coordinates[1], widthBB, heightBB);
-        showMessage('Annotating : ' + spacial_settings[objectSelected].annotations[labelSelected].label);
+        showMessage('Annotating ...');
     }
     // draw full bounding box because user has selected the second point
     else if(bBox.nClicks === 2){
@@ -856,11 +870,13 @@ function drawBoundingBox(x, y){
         if(bBox.annotationType === "time_annotation"){
             wait_for_click = false;
             bBox.label = time_settings[timeObjectSelected].annotations[timeLabelSelected].label;
+            bBox.group_name = time_settings[timeObjectSelected].group_name;
             showMessage({'type':'success', 'message':'Annotation '+ bBox.label + ' created, you can now start time annotation'});
             saveTemporarilyRegion(bBox);
         }
         else {
-            bBox.annotationType = spacial_settings[objectSelected].type;
+            //bBox.annotationType = spacial_settings[objectSelected].type;
+            bBox.group_name = spacial_settings[objectSelected].group_name;
 
             if(spacial_settings[objectSelected].type === 'unique'){
                 bBox.label = spacial_settings[objectSelected].annotations[0].label;
@@ -902,9 +918,11 @@ function drawLineBetweenPoints(x, y){
     if(line.nbClicks > 0 && line.nbClicks < line.nbJunctions){
         refreshImage();
         [last_junction_x, last_junction_y] = line.getLastCoordinates();
-        context.moveTo(last_junction_x, last_junction_y);
-        context.lineTo(x,y);
-        showMessage('Annotating : ' + line.label);
+        if(last_junction_x > 0 && last_junction_y > 0){
+            context.moveTo(last_junction_x, last_junction_y);
+            context.lineTo(x,y);
+        }
+        showMessage('Annotating : ' + line.label + ' - Point number : ' + line.nbClicks);
     } else if(line.nbClicks == line.nbJunctions){
         // new line
         line.annotationType = spacial_settings[objectSelected].name;
@@ -985,34 +1003,45 @@ function setSettings(){
         select.dispatchEvent(event);
     });
     // read if multilabels are activated
-    $.getJSON(sprintf("./config/multilabels.json?q=$f", Math.random()), function(data) {
-        data.forEach(multilabel => {
-            multilabels.push(multilabel);
-        });
-        // if yes, create new selects for each category
-        if(multilabels.length > 0){
-            //var html  = '<div class="btn-group" data-toggle="buttons"><label id="label_multilabels" class="btn btn-danger">';
-            //html += '<input  id="multilabels" type="checkbox" autocomplete="off">Multilabels ? :';
-            //html += '<span id="span_multilabels" class="glyphicon glyphicon-remove"></span></label></div>';
+    $.ajax({
+        url: "./config/multilabels.json",
+        type: "GET",
+        statusCode: {
+            404: function() {
+                $('#div_multilabels').hide();
+            }
+        },
+        success:function(settings) {
+            $.getJSON(sprintf("./config/multilabels.json?q=$f", Math.random()), function(data) {
 
-            var html  = $('#selects_multilabels').html();
-            multilabels.forEach(multilabel => {
-                multilabel.category = multilabel.category.replace(/\s+/g, '');
-                html += '<h3>' +  multilabel.category + '</h3>';
-                html += '<select id="select_'+ multilabel.category +'" class="form-control">';
-                // and add each options for this category
-                multilabel.options.forEach(option => {
-                    html += '<option value="' + option + '">' + option + '</option>';
+                data.forEach(multilabel => {
+                    multilabels.push(multilabel);
                 });
-                html += '</select>';
+                // if yes, create new selects for each category
+                if (multilabels.length > 0) {
+                    //var html  = '<div class="btn-group" data-toggle="buttons"><label id="label_multilabels" class="btn btn-danger">';
+                    //html += '<input  id="multilabels" type="checkbox" autocomplete="off">Multilabels ? :';
+                    //html += '<span id="span_multilabels" class="glyphicon glyphicon-remove"></span></label></div>';
+
+                    var html = $('#selects_multilabels').html();
+                    multilabels.forEach(multilabel => {
+                        multilabel.category = multilabel.category.replace(/\s+/g, '');
+                        html += '<h3>' + multilabel.category + '</h3>';
+                        html += '<select id="select_' + multilabel.category + '" class="form-control">';
+                        // and add each options for this category
+                        multilabel.options.forEach(option => {
+                            html += '<option value="' + option + '">' + option + '</option>';
+                        });
+                        html += '</select>';
+                    });
+                    $('#selects_multilabels').html(html);
+                }
+                else {
+                    $('#div_multilabels').hide();
+                }
             });
-            $('#selects_multilabels').html(html);
-        }
-        else {
-            $('#div_multilabels').hide();
         }
     });
-
 } // end load settings
 
 /**
@@ -1039,7 +1068,7 @@ function addListenerToCanvas(){
             }
 
             // time annotation ?
-            if(temp_region != null && !one_box_clicked){
+            if(temp_region != null){
                 clickOnABox(temp_region, getMousePos(e), "time");
             }
         }
@@ -1174,130 +1203,134 @@ function addListenersToDocument(){
             sKeyDown = !sKeyDown;
             refreshImage();
         }
-        //right key, next frame
-        if (event.keyCode == key['right']) {
-            if(!getIfCanvasFree()){
-                wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
-            }
-            else if (frameIndex < dataset.frames.length - 1) {
-                frameIndex++;
-                displayImage();
-            }
 
-        }
-        // previous frame
-        else if (event.keyCode == key['left']) {
-            if(!getIfCanvasFree()){
-                wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
-            }
-            else if (frameIndex > 0)
-            {
-                frameIndex--;
-                displayImage();
-            }
-
-        }
-        // frame -= 50
-        else if (event.keyCode == key['pgdn']) {
-            if(!getIfCanvasFree()){
-                wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
-            }
-            else if (frameIndex > 50) {
-                frameIndex =  frameIndex - 50;
-            } else {
-                frameIndex = 0;
-            }
-            displayImage();
-        }
-        // frame += 50
-        else if (event.keyCode == key['pgup']) {
-            if(!getIfCanvasFree()){
-                wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
-            }
-            else if (frameIndex < dataset.frames.length - 50) {
-                frameIndex =  frameIndex + 50;
-            } else {
-                frameIndex = dataset.frames.length-1;
-            }
-            displayImage();
-
-        }
-        // duplicate previous annotation for this frame
-        else if(event.keyCode === key['r']) {
-            if (frameIndex > 0)
-            {
-                frameIndex--;
-                for(var num_annotation = 0; num_annotation < dataset.frames[frameIndex].annotations.length; num_annotation++){
-                    var annotation = dataset.frames[frameIndex].annotations[num_annotation];
-                    bBox.coordinates[0] =  annotation.x;
-                    bBox.coordinates[1] =  annotation.y;
-                    bBox.coordinates[2] =  annotation.width;
-                    bBox.coordinates[3] =  annotation.height;
-                    bBox.label          =  annotation.label;
-                    bBox.annotationType =  annotation.type;
-                    frameIndex++;
-                    pushNewAnnotation(bBox, 'box');
-                    frameIndex--;
+        switch(event.keyCode){
+            case key['right']:         //right key, next frame
+                if(!getIfCanvasFree()){
+                    wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
                 }
-                frameIndex++;
+                else if (frameIndex < dataset.frames.length - 1) {
+                    frameIndex++;
+                    displayImage();
+                }
+                break;
+
+            case key['left']:         // previous frame
+                if(!getIfCanvasFree()){
+                    wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
+                }
+                else if (frameIndex > 0)
+                {
+                    frameIndex--;
+                    displayImage();
+                }
+                break;
+
+            case key['pgdn']:         // frame -= 50
+                if(!getIfCanvasFree()){
+                    wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
+                }
+                else if (frameIndex > 50) {
+                    frameIndex =  frameIndex - 50;
+                } else {
+                    frameIndex = 0;
+                }
                 displayImage();
-                showMessage({'type':'success', 'message':'Annotations of previous frame correctly imported'});
-            }
-        }
+                break;
 
-        //select next label type 'z' key
-        else if (event.keyCode == key['z']) {
-            labelSelected++;
-            if(labelSelected === spacial_settings[objectSelected].annotations.length)
-                labelSelected = 0;
-            var select_annotation_label = document.getElementById('select_annotation_label');
-            var event = new Event('change');
-            select_annotation_label.selectedIndex = labelSelected;
-            select_annotation_label.dispatchEvent(event);
-            showMessage(spacial_settings[objectSelected].annotations[labelSelected].label + ' selected');
-        }
-        //select next annotation 'a' key
-        else if (event.keyCode == key['a']) {
-            objectSelected++;
-            if(objectSelected === spacial_settings.length)
-                objectSelected = 0;
-            var select_annotation_group_name = document.getElementById('select_annotation_group_name');
-            var event = new Event('change');
-            select_annotation_group_name.selectedIndex = objectSelected;
-            select_annotation_group_name.dispatchEvent(event);
-            showMessage(spacial_settings[objectSelected].name + ' selected');
-        }
-        //select next time annotation 'e' key
-        else if (event.keyCode == key['e']) {
-            timeLabelSelected++;
-            if(timeLabelSelected === time_settings[timeObjectSelected].labels.length)
-                timeLabelSelected = 0;
-            var select_time_label_type = document.getElementById('select_time_annotation_label');
-            var event = new Event('change');
-            select_time_label_type.selectedIndex = timeLabelSelected;
-            select_time_label_type.dispatchEvent(event);
-            showMessage(time_settings[timeObjectSelected].labels[timeLabelSelected] + ' selected');
-        }
+            case key['pgup']:         // frame += 50
+                if(!getIfCanvasFree()){
+                    wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
+                }
+                else if (frameIndex < dataset.frames.length - 50) {
+                    frameIndex =  frameIndex + 50;
+                } else {
+                    frameIndex = dataset.frames.length-1;
+                }
+                displayImage();
+                break;
 
-        // delete last annotation 'u'
-        else if (event.keyCode === key['u']) {
-            dataset.frames[frameIndex].annotations.pop();
-            refreshImage();
-            showMessage({'type':'success', 'message':'Last annotation successfully deleted'});
-        }
-        // remove all annotations for current frame 'c'
-        else if (event.keyCode === key['c']) {
-            // delete all bounding boxs for current frame
-            dataset.frames[frameIndex].annotations = [];
-            refreshImage();
-            showMessage({'type':'success', 'message':'All annotations were deleted'});
-        }
+            case key['r']:         // duplicate previous annotation for this frame
+                if (frameIndex > 0)
+                {
+                    frameIndex--;
+                    for(var num_annotation = 0; num_annotation < dataset.frames[frameIndex].annotations.length; num_annotation++){
+                        var annotation = dataset.frames[frameIndex].annotations[num_annotation];
+                        bBox.coordinates[0] =  annotation.x;
+                        bBox.coordinates[1] =  annotation.y;
+                        bBox.coordinates[2] =  annotation.width;
+                        bBox.coordinates[3] =  annotation.height;
+                        bBox.label          =  annotation.label;
+                        bBox.annotationType =  annotation.type;
+                        frameIndex++;
+                        pushNewAnnotation(bBox, 'box');
+                        frameIndex--;
+                    }
+                    frameIndex++;
+                    displayImage();
+                    showMessage({'type':'success', 'message':'Annotations of previous frame correctly imported'});
+                }
+                break;
 
-        // stop drawing
-        else if(event.keyCode === key['esc']){
-            bBox.reset();
-            line.reset();
-            refreshImage();
+            case key['z']:         //select next label type 'z' key
+                labelSelected++;
+                if(labelSelected === spacial_settings[objectSelected].annotations.length)
+                    labelSelected = 0;
+                var select_annotation_label = document.getElementById('select_annotation_label');
+                var event = new Event('change');
+                select_annotation_label.selectedIndex = labelSelected;
+                select_annotation_label.dispatchEvent(event);
+                showMessage(spacial_settings[objectSelected].annotations[labelSelected].label + ' selected');
+                break;
+
+            case key['a']:        //select next annotation 'a' key
+                objectSelected++;
+                if(objectSelected === spacial_settings.length)
+                    objectSelected = 0;
+                var select_annotation_group_name = document.getElementById('select_annotation_group_name');
+                var event = new Event('change');
+                select_annotation_group_name.selectedIndex = objectSelected;
+                select_annotation_group_name.dispatchEvent(event);
+                showMessage(spacial_settings[objectSelected].name + ' selected');
+                break;
+
+            case key['e']:        //select next time annotation 'e' key
+                imeLabelSelected++;
+                if(timeLabelSelected === time_settings[timeObjectSelected].labels.length)
+                    timeLabelSelected = 0;
+                var select_time_label_type = document.getElementById('select_time_annotation_label');
+                var event = new Event('change');
+                select_time_label_type.selectedIndex = timeLabelSelected;
+                select_time_label_type.dispatchEvent(event);
+                showMessage(time_settings[timeObjectSelected].labels[timeLabelSelected] + ' selected');
+                break;
+
+            case key['u']:        // delete last annotation 'u'
+                dataset.frames[frameIndex].annotations.pop();
+                refreshImage();
+                showMessage({'type':'success', 'message':'Last annotation successfully deleted'});
+                break;
+
+            case key['c']:        // remove all annotations for current frame 'c'
+                // delete all bounding boxs for current frame
+                dataset.frames[frameIndex].annotations = [];
+                refreshImage();
+                showMessage({'type':'success', 'message':'All annotations were deleted'});
+                break;
+
+            case key['esc']:        // stop drawing
+                bBox.reset();
+                line.reset();
+                refreshImage();
+                showMessage({'type':'danger', 'message':'Annotation canceled'});
+                break;
+
+            case key['p']:      // when drawing lines, it can happens that some points are not on the image, press p to skip them
+                var shape = spacial_settings[objectSelected].annotations[labelSelected].shape;
+                if(shape.indexOf('point')>=0){
+                    if(line.nbClicks == 0) line.nbJunctions = shape.match(/\d+/)[0];
+                    line.click(false);
+                }
         }
     });
 
@@ -1408,28 +1441,40 @@ function addListenersToDocument(){
  */
 function addListenerToUploadData(){
     $('#upload').on('change', function(event) {
-        var file = event.target.files[0];
-        var textType = /json.*/;
-        var self = $(this);
+        var _url = $('#select').val();
 
-        if (file.type == "" || file.type.match(textType))
-        {
-            var reader = new FileReader();
-            reader.onload = function(e)
-            {
-                // annotations is the JSON file containing all the info about the dataset
-                var annotations = JSON.parse(reader.result);
-                initializeImgDataset(annotations);  // initialize annotation tool
+        if (_url != "" ) {
+            var file = event.target.files[0];
+            var textType = /json.*/;
+            var self = $(this);
 
-                // set name of file uploaded to the corresponding gui element
-                $('#select').json2html(annotations, {'<>':'option','html':'${name}', 'value':'${url}'});
-                $('#select').val(annotations.url);
-                $('#canvas').focus();
+            if (file.type == "" || file.type.match(textType)) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    // annotations is the JSON file containing all the info about the dataset
+                    var uploaded_data = JSON.parse(reader.result);
+
+                    dataset.frames.forEach(function (frame) {
+                        frame.annotations = [];
+                        uploaded_data.frames.forEach(function (uploaded_frame) {
+                            if (frame.file === uploaded_frame.file) {
+                                frame.annotations = uploaded_frame.annotations;
+                            }
+                        });
+                    });
+                    dataset.time_annotations = [];
+                    uploaded_data.time_annotations.forEach(function (time_annotation) {
+                        dataset.time_annotations.push(time_annotation);
+                    });
+                    refreshImage();
+                    showMessage({'type': 'success', 'message': 'Annotations uploaded'});
+                    $('#canvas').focus();
+                };
+                reader.readAsText(file);
             }
-            reader.readAsText(file);
+            else showMessage({'type': 'danger', 'message': 'File not supported'});
         }
-        else
-            alert("File not supported!");
+        else showMessage({'type': 'danger', 'message': 'Select a dataset before upload annotations'});
     }); //upload
 } // end addListenerToUploadData
 
@@ -1482,7 +1527,6 @@ function addListenerToSelects(){
             $('#annotation_type').show();
             $('#annotation_label').show();
             $('#auto_creation').show();
-            $('#div_multilabels').show();
             $('#div_auto_create_box').show();
 
         } else {
@@ -1493,9 +1537,7 @@ function addListenerToSelects(){
             $('#annotation_type').hide();
             $('#annotation_label').hide();
             $('#auto_creation').hide();
-            $('#div_multilabels').hide();
             $('#div_auto_create_box').hide();
-
         }
     });
 
@@ -1522,7 +1564,7 @@ function addListenerToSelects(){
     //changes in the list of labels for a particular annotation time type
     $('#select_time_annotation_label').change( function () {
         timeLabelSelected = $("#select_time_annotation_label option:selected").index();
-        $('#start_time_annotation').html('Start ' + time_settings[timeObjectSelected].labels[timeLabelSelected] + ' annotation');
+        $('#start_time_annotation').html('Start ' + time_settings[timeObjectSelected].annotations[timeLabelSelected].label + ' annotation');
     });
 
     // changes in the list of annotation time types

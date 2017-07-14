@@ -18,7 +18,11 @@
   {
     "category" : "ethnic group",
     "options" : [
-      "idk"
+      "American indian",
+      "Asian",
+      "Black or african american",
+      "Hispanic/latino",
+      "Caucasian or white european"
     ]
   }
 ]
