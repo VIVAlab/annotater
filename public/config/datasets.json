@@ -8,15 +8,15 @@
     "url": "data/goose/data.json"
   },
   {
-    "name": "cafetaria",
-    "url": "data/cafetaria/data.json"
+    "name": "June_17th",
+    "url": "data/June_17th/data.json"
   },
   {
-    "name": "2017-05-29/0",
-    "url": "data/2017-05-29/0/data.json"
+    "name": "bycicle",
+    "url": "data/bycicle/data.json"
   },
   {
-    "name": "iwatchlife/20170626",
-    "url": "data/iwatchlife/20170626/data.json"
+    "name": "iwatchlife",
+    "url": "data/iwatchlife/data.json"
   }
 ]

@@ -6,20 +6,36 @@
     [
       {
         "shape": "rectangle",
-        "label" : "Truck"
+        "label" : "Cyclist"
 
       },
       {
         "shape": "rectangle",
-        "label" : "Car"
+        "label" : "Bike"
+      }
+    ]
+  },
+  {
+    "group_name" : "all",
+    "type" : "multiple",
+    "annotations" :
+    [
+      {
+        "shape": "rectangle",
+        "label" : "Left wheel"
+
       },
       {
         "shape": "rectangle",
-        "label" : "Human"
+        "label" : "Right wheel"
       },
       {
         "shape": "rectangle",
-        "label" : "Animal"
+        "label" : "Bike"
+      },
+      {
+        "shape": "rectangle",
+        "label" : "Cyclist"
       }
     ]
   }
