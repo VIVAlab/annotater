@@ -1,6 +1,6 @@
 // global variables
 //don't change
-var canvas, bBox, line, context, setLoaded;
+var canvas, bBox, line, context, setLoaded, opencv;
 var image            = null;
 var dataset          = {};
 var temp_region     = null; // temporary region used for time annotation
@@ -16,8 +16,10 @@ var index_point_clicked = -1;
 var type_annotation_clicked = ""; //For resizing of moving box
 var index_annotation_clicked = -1;//For resizing of moving box
 var diff_x, diff_y;
-var wait_for_click;
+var wait_for_click, wait_for_opencv = false;
 var auto_creation = false, auto_multilabels = false;
+
+
 
 // var changables :
 var options = {
@@ -33,7 +35,57 @@ var options = {
     'colorTimeBoundingBox'          : "#0000FF"
 };
 
+function sendRegionsToServer(){
+    //Are we sending annotations to the server ?
+    if(opencv.sending){
+        //Is the region's group name opencv?
+        var annotation = opencv.getCurrentAnnotation();
+        if(annotation.group_name == "opencv"){
+            //Send the annotation
+            var frame_src = dataset.frames[frameIndex].file;
+            var next_frame = dataset.frames[frameIndex+1].file;
 
+            socket_send('new frame', {
+                url         : dataset.name,
+                frame_src   : frame_src,
+                next_frame  : next_frame,
+                region      : annotation });
+        }
+    }
+}
+
+/**
+ * Object contain the state of the interaction between opencv and javascript
+ */
+function stateOpencv () {
+    this.sending = false;
+    this.current_region = -1;
+    this.annotations = [];
+
+    this.start = function(){
+        this.sending = true;
+        this.current_region = 0;
+    };
+
+    this.end = function(){
+        return this.current_region >= this.annotations.length
+    };
+
+    this.stop = function(){
+        this.sending = false;
+        this.current_region = -1;
+        this.annotations = [];
+    };
+
+    this.nextAnnotation = function(){
+        this.current_region++;
+        if(this.end()) this.stop();
+    };
+
+    this.getCurrentAnnotation = function(){
+        return this.annotations[this.current_region];
+    }
+}
 /**
  * object that contains info for mouse
  * interaction to create bounding boxes.
@@ -155,7 +207,7 @@ function refreshDatas(){
  * show alert to user
  */
 function showMessage(alert) {
-    if(alert['type']){ // if alert's type is specified 
+    if(alert['type']){ // if alert's type is specified
         $('#alert').attr("class","alert alert-"+alert['type']);
         $('#alert').html(alert['message']);
     } else { // if we just want to inform the user something
@@ -572,12 +624,12 @@ function pushNewAnnotation(anAnnotation, type){
     if(auto_multilabels){
         multilabels.forEach(label => {
             assign_multilabels.push(
-                {
-                    'category'  : label.category,
-                    'value'     : $('#select_'+label.category).val()
-                }
-            )
-        });
+            {
+                'category'  : label.category,
+                'value'     : $('#select_'+label.category).val()
+            }
+        )
+    });
     }
     switch (type){
         case 'line':
@@ -966,6 +1018,10 @@ function newTrackedBox(new_coord, data){
     bbox.label = data.region.label;
     pushNewAnnotation(bbox, 'box');
     refreshImage();
+    opencv.nextAnnotation();
+    if(opencv.sending) {
+        sendRegionsToServer();
+    }
 }
 
 /**
@@ -1030,7 +1086,7 @@ function setSettings(){
 
                 data.forEach(multilabel => {
                     multilabels.push(multilabel);
-                });
+            });
                 // if yes, create new selects for each category
                 if (multilabels.length > 0) {
                     //var html  = '<div class="btn-group" data-toggle="buttons"><label id="label_multilabels" class="btn btn-danger">';
@@ -1040,14 +1096,14 @@ function setSettings(){
                     var html = $('#selects_multilabels').html();
                     multilabels.forEach(multilabel => {
                         multilabel.category = multilabel.category.replace(/\s+/g, '');
-                        html += '<h3>' + multilabel.category + '</h3>';
-                        html += '<select id="select_' + multilabel.category + '" class="form-control">';
-                        // and add each options for this category
-                        multilabel.options.forEach(option => {
-                            html += '<option value="' + option + '">' + option + '</option>';
-                        });
-                        html += '</select>';
-                    });
+                    html += '<h3>' + multilabel.category + '</h3>';
+                    html += '<select id="select_' + multilabel.category + '" class="form-control">';
+                    // and add each options for this category
+                    multilabel.options.forEach(option => {
+                        html += '<option value="' + option + '">' + option + '</option>';
+                });
+                    html += '</select>';
+                });
                     $('#selects_multilabels').html(html);
                 }
                 else {
@@ -1224,19 +1280,10 @@ function addListenersToDocument(){
                     wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
                 }
                 else if (frameIndex < dataset.frames.length - 1) {
-                    var frame_src = dataset.frames[frameIndex].file;
-                    var next_frame = dataset.frames[frameIndex+1].file;
-                    var regions = getAndPrintAllBoxesForCurrentImage();
-                    for(var i = 0; i < regions.length; i++){
-                        if(regions[i].group_name == "opencv"){
-                            //console.log(["Region envoyée :", regions[0]]);
-                            socket_send('new frame', {
-                                url         : dataset.name,
-                                frame_src   : frame_src,
-                                next_frame  : next_frame,
-                                region      : regions[i] });
-                        }
-                    }
+                    opencv.annotations = getAndPrintAllBoxesForCurrentImage();
+                    opencv.start();
+                    showMessage("Tracking annotations, please wait ...");
+                    sendRegionsToServer();
                     frameIndex++;
                     displayImage();
                 }
@@ -1543,7 +1590,7 @@ function addListenerToSelects(){
     $('#select').change( function () {
         var _url = $('#select').val();
 
-        if (_url != "" ){
+        if (_url != null && _url != "" ){
             frameIndex = 0;
             $.getJSON(sprintf('$s?q=$f',_url, Math.random()), function(data) {
                 initializeImgDataset(data);
@@ -1613,7 +1660,8 @@ $(document).ready(function(){
     context   = canvas.getContext('2d');            // select context
     image = new Image();
     bBox  = new stateBBox();                        // to track the mouse status to create a bounding box
-    line  = new stateLine();                        // to track the mouse status to create a bounding box
+    line  = new stateLine();                        // to track the mouse status to create multiple points
+    opencv = new stateOpencv();
     setLoaded = false;                              // flag indicating if the image set has been uploaded
 
     socket_init();
