@@ -76,12 +76,16 @@ function stateLine(){
     this.nbJunctions    = 0;
     this.click = function (isVisible = true){
         this.nbClicks++;
-        if(isVisible) this.coordinates.push([this.mx, this.my]);
+        if(isVisible) this.coordinates.push({
+            'x' : this.mx,
+            'y' : this.my,
+            'hidden' : false
+        });
         else this.coordinates.push([-1,-1]);
     };
     this.getLastCoordinates = function(){
         var index = this.coordinates.length;
-        return [this.coordinates[index-1][0], this.coordinates[index-1][1]];
+        return [this.coordinates[index-1]['x'], this.coordinates[index-1]['y']];
     };
     this.reset = function (){
         this.nbClicks       = 0;
@@ -357,10 +361,10 @@ function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
 
     // clicked on a point ?
     for(var i = 0; i < annotation.coordinates.length; i++){
-        if(mouse_pos.x < annotation.coordinates[i][0] + options['line_width']
-            && mouse_pos.x > annotation.coordinates[i][0] - options['line_width']
-            && mouse_pos.y < annotation.coordinates[i][1] + options['line_width']
-            && mouse_pos.y > annotation.coordinates[i][1] - options['line_width'] ){
+        if(mouse_pos.x < annotation.coordinates[i]['x'] + options['line_width']
+            && mouse_pos.x > annotation.coordinates[i]['x'] - options['line_width']
+            && mouse_pos.y < annotation.coordinates[i]['y'] + options['line_width']
+            && mouse_pos.y > annotation.coordinates[i]['y'] - options['line_width'] ){
             clicked = true;
             if(dKeyDown){
                 dataset.frames[frameIndex].annotations.splice(num_annotation, 1);
@@ -372,9 +376,7 @@ function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
                 index_point_clicked = i;
             }
             else if(hKeyDown){
-                dataset.frames[frameIndex].annotations[num_annotation].hidden = !dataset.frames[frameIndex].annotations[num_annotation].hidden;
-                if(dataset.frames[frameIndex].annotations[num_annotation].hidden) showMessage({'type': 'success', 'message': 'Annotation is now hidden'});
-                else showMessage({'type': 'success', 'message': 'Annotation is now visible'});
+                dataset.frames[frameIndex].annotations[num_annotation].coordinates[i]['hidden'] ^= true;
                 refreshImage();
             }
         }
@@ -388,8 +390,10 @@ function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
         var vertical = false;
         var line_width = options['line_width'];
         for(var i = 0; i < annotation.coordinates.length-1; i++){
-            [ax , ay]= annotation.coordinates[i];
-            [bx , by]= annotation.coordinates[i+1];
+            ax = annotation.coordinates[i]['x'];
+            ay = annotation.coordinates[i]['y'];
+            bx = annotation.coordinates[i+1]['x'];
+            by = annotation.coordinates[i+1]['y'];
 
             //have to find if a point is in a line
             //y = ax + b
@@ -433,12 +437,6 @@ function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
             if(dKeyDown){
                 dataset.frames[frameIndex].annotations.splice(num_annotation, 1);
                 showMessage({'type': 'success', 'message': 'Box deleted'});
-                refreshImage();
-            }
-            else if(hKeyDown){
-                dataset.frames[frameIndex].annotations[num_annotation].hidden = !dataset.frames[frameIndex].annotations[num_annotation].hidden;
-                if(dataset.frames[frameIndex].annotations[num_annotation].hidden) showMessage({'type': 'success', 'message': 'Annotation is now hidden'});
-                else showMessage({'type': 'success', 'message': 'Annotation is now visible'});
                 refreshImage();
             }
         }
@@ -585,9 +583,8 @@ function pushNewAnnotation(anAnnotation, type){
                 'shape'             : 'line',
                 'junctions_number'  : anAnnotation.nbJunctions,
                 'label'             : anAnnotation.label,
-                'group_name'       : anAnnotation.group_name,
+                'group_name'        : anAnnotation.group_name,
                 'multilabels'       : assign_multilabels,
-                'hidden'            : false,
                 'coordinates'       : anAnnotation.coordinates
             };
 
@@ -645,7 +642,7 @@ function saveTemporarilyRegion(bb){
  * draw labels on annotations
  */
 function drawLabel(p1, label, type, params = {}){
-    var x = p1[0], y = p1[1];
+    var x = p1['x'], y = p1['y'];
     if(x > 0 && y > 0){
         if(type === "rectangle"){
             // draw the background rectangle
@@ -680,8 +677,8 @@ function drawLabel(p1, label, type, params = {}){
         }
         else if(type === "line"){
             //draw label along a line
-            var dx = params['p2'][0] - x;
-            var dy = params['p2'][1] - y;
+            var dx = params['p2']['x'] - x;
+            var dy = params['p2']['y'] - y;
             var padding = 2;
             var pad = padding / Math.sqrt(dx*dx+dy*dy);
 
@@ -728,39 +725,41 @@ function drawRectangle(x, y, width, height, label, color){
  * draw points and lines between these points
  */
 function drawPoints(annotation){
-    // first draw the points
-    if(annotation.hidden){
-        context.strokeStyle = options['colorHiddenLine'];
-        context.fillStyle = options['colorHiddenLine'];
-    }
-    else {
-        context.strokeStyle = options['colorLine'];
-        context.fillStyle = options['colorLine'];
-    }
-
-    for(var i = 0; i < annotation.coordinates.length; i++){
-        if(annotation.coordinates[i][0] > 0){
-            context.beginPath();
-            context.arc(annotation.coordinates[i][0], annotation.coordinates[i][1], options['circle_diameter'], 0, Math.PI*2, true);
-            context.fill();
-            context.closePath();
-        }
-    }
-
-    //and then, if necessary, draw lines between the points
+    //if necessary, draw lines between the points
     for(var j = 0; j < annotation.coordinates.length - 1; j++){
-        if(annotation.coordinates[j][0] > 0 && annotation.coordinates[j+1][0] > 0) {
+        if(annotation.coordinates[j]['x'] > 0 && annotation.coordinates[j+1]['x'] > 0) {
+            context.strokeStyle = options['colorLine'];
+            context.fillStyle = options['colorLine'];
             context.beginPath();
-            context.moveTo(annotation.coordinates[j][0], annotation.coordinates[j][1]);
-            context.lineTo(annotation.coordinates[j + 1][0], annotation.coordinates[j + 1][1]);
+            context.moveTo(annotation.coordinates[j]['x'], annotation.coordinates[j]['y']);
+            context.lineTo(annotation.coordinates[j + 1]['x'], annotation.coordinates[j + 1]['y']);
             context.stroke();
             context.closePath();
         }
     }
 
+    //then draw the points
+    for(var i = 0; i < annotation.coordinates.length; i++){
+        coordinate = annotation.coordinates[i];
+        if(coordinate['x'] > 0){
+            if(coordinate['hidden']){
+                context.strokeStyle = options['colorHiddenLine'];
+                context.fillStyle = options['colorHiddenLine'];
+            }
+            else {
+                context.strokeStyle = options['colorLine'];
+                context.fillStyle = options['colorLine'];
+            }
+            context.beginPath();
+            context.arc(coordinate['x'], coordinate['y'], options['circle_diameter'], 0, Math.PI*2, true);
+            context.fill();
+            context.closePath();
+        }
+    }
+
     if(!sKeyDown) {
-        if(annotation.coordinates.length > 1) drawLabel(annotation.coordinates[0], annotation.label, "line", {'color':context.strokeStyle, 'p2':annotation.coordinates[1]});
-        else drawLabel(annotation.coordinates[0], annotation.label, "point", {'color':context.strokeStyle});
+        if(annotation.coordinates.length > 1) drawLabel(annotation.coordinates[0], annotation.label, "line", {'color':options['colorLine'], 'p2':annotation.coordinates[1]});
+        else drawLabel(annotation.coordinates[0], annotation.label, "point", {'color':options['colorLine']});
     }
 }
 
@@ -1497,7 +1496,7 @@ function addListenerToDownloadData(){
     {
         var filename = sprintf('$s.json', "annotations");
         var annotations = [];
-        var data    = dataset;
+        var data = Object.assign({}, dataset);
         for(var i = 0; i < dataset.frames.length; i++){
             if(dataset.frames[i].annotations.length > 0){
                 annotations.push(dataset.frames[i]);
