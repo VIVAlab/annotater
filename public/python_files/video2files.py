@@ -42,7 +42,7 @@ def capture_video(input):
         if args.width:
             frame = cv2.resize(frame, (args.width, args.width * Orows / Ocols))
 
-        cv2.imwrite(join(args.folder,'%010d.png' % (count)), frame)
+        cv2.imwrite(join(args.folder, '%010d.jpg' % (count)), frame)
         count += 1
 
     # When everything done, release the capture
@@ -52,18 +52,24 @@ def capture_video(input):
 
 
 if not os.path.exists(args.folder):
+    print 'Creating folder "' + args.folder + '"'
     os.makedirs(args.folder)
 
-if os.path.isdir(glob.glob(args.input)[0]):
-    # take each video of the input folder
-    elements = []
-    for element in glob.glob(args.input+'/*'):
-        elements.append(element)
+if len(glob.glob(args.input)) > 0:
+    if os.path.isdir(glob.glob(args.input)[0]):
+        print "Input is a folder"
+        # take each video of the input folder
+        elements = []
+        for element in glob.glob(args.input+'/*'):
+            elements.append(element)
 
-    elements.sort()
-    for video in elements:
-        capture_video(video)
-
+        elements.sort()
+        print "Converting, please wait the end"
+        for video in elements:
+            capture_video(video)
+    elif os.path.exists(args.input):
+        print "Input is a file"
+        print "Converting, please wait the end"
+        capture_video(args.input)
 else:
-    capture_video(args.input)
-
+    print "Input does not exist"
