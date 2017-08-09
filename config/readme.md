@@ -8,7 +8,7 @@ type = type of annotation possible : multiple, order, unique, time (ex: "type" :
 annotations = name of annotations allowed (ex : "annotations" : ["left hand", "right hand"])
 
 ### Example of config.json file
-`[  
+[  
   {  
     "group_name" : "Various",  
     "type" : "multiple",  
@@ -47,26 +47,26 @@ annotations = name of annotations allowed (ex : "annotations" : ["left hand", "r
       }  
     ]  
   }  
-]` 
+]
 
 # datasets.json
 ### Description
 Load the path of the frames and display a name in the interface.
 
 ### Basic format:
-`[  
+[  
 	{"name": "Select Dataset", "url": ""}, //DO NOT DELETE THIS LINE  
 	//Your customs folder path  
 	{"name": "videox", "url": "./data/videox/data.json"},  
 	{"name": "videoy", "url": "./data/videoy/data.json"}  
-]`
+]
 
 # multilabels.json
 ### Description
 Allow users to add others informations to one annotation. For instance, if you annotate persons and you want to add other informations like his gender, age.. Please follow the example bellow
 
 ### Example of multilabels.json file
-`[   
+[   
   {  
     "category" : "gender",  
     "options" : [  
@@ -83,4 +83,4 @@ Allow users to add others informations to one annotation. For instance, if you a
       "+60"  
     ]  
   }  
-]`
+]
