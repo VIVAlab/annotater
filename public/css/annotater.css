@@ -1,0 +1,74 @@
+body{
+    overflow-x: hidden;
+}
+
+.starter-template {
+    text-align: center;
+}
+#canvas {
+    border: 1px solid black;
+}
+#keyboard_ref table, #setup_parameters table{
+    display: inline-block;
+}
+table td{
+    padding-left:5px;
+}
+#download, #upload {
+    min-width: 300px;
+}
+.alert{
+    text-align: center;
+}
+
+/* decrease sizes */
+.form-control, td, .btn{font-size:12px;}
+.alert{padding: 8px;}
+
+
+
+/*checkbox*/
+.vertical_align{
+    display: inline-flex;
+    align-items: center;
+}
+.checkbox_custom{
+    padding-left: 10px;
+}
+
+
+/*selects*/
+#select_time_annotation_type, #select_time_annotation_label, #time_annotations_in_progress{
+    text-align: center;
+}
+.centered{
+    float: none;
+    display: inline-block;
+}
+#start_time_annotation{
+    margin-top: 10px;
+}
+.bordered{
+    border-top: dashed 2px #2e6da4;
+    border-left: dashed 2px #2e6da4;
+    border-bottom: dashed 2px #2e6da4;
+}
+
+/*keyboard shortcuts*/
+.table_shortcuts {
+    border-collapse:separate;
+    border:solid black 1px;
+    border-radius:6px;
+    -moz-border-radius:6px;
+}
+
+.table_shortcuts > tbody > tr>td {
+    border-top:solid black 1px;
+    text-align: left;
+}
+
+
+.table_shortcuts > tbody > tr>td:first-child {
+    border-left: none;
+    text-align: right;
+}
