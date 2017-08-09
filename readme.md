@@ -45,7 +45,7 @@ Please follow these steps :
     `cd annotater/cpp`  
     `node-gyp configure`  
     If this worked, you can go to next step and type :
-    `node-gyp build` whichi is going to compile our c++ files and create a executable file in build/Release/
+    `node-gyp build` which is going to compile our c++ files and create a executable file in build/Release/
     
 5. Once it's done, you can start the server :  
     `cd ..`  

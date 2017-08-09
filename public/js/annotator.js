@@ -128,12 +128,16 @@ function stateLine(){
     this.nbJunctions    = 0;
     this.click = function (isVisible = true){
         this.nbClicks++;
-        if(isVisible) this.coordinates.push([this.mx, this.my]);
+        if(isVisible) this.coordinates.push({
+            'x' : this.mx,
+            'y' : this.my,
+            'hidden' : false
+        });
         else this.coordinates.push([-1,-1]);
     };
     this.getLastCoordinates = function(){
         var index = this.coordinates.length;
-        return [this.coordinates[index-1][0], this.coordinates[index-1][1]];
+        return [this.coordinates[index-1]['x'], this.coordinates[index-1]['y']];
     };
     this.reset = function (){
         this.nbClicks       = 0;
@@ -405,14 +409,14 @@ function clickOnABox(annotation, mouse_pos , type_annotation, num_annotation){
  * get if user has clicked on a line with d key pressed
  */
 function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
-    var clicked = false;
+   var clicked = false;
 
     // clicked on a point ?
     for(var i = 0; i < annotation.coordinates.length; i++){
-        if(mouse_pos.x < annotation.coordinates[i][0] + options['line_width']
-            && mouse_pos.x > annotation.coordinates[i][0] - options['line_width']
-            && mouse_pos.y < annotation.coordinates[i][1] + options['line_width']
-            && mouse_pos.y > annotation.coordinates[i][1] - options['line_width'] ){
+        if(mouse_pos.x < annotation.coordinates[i]['x'] + options['line_width']
+            && mouse_pos.x > annotation.coordinates[i]['x'] - options['line_width']
+            && mouse_pos.y < annotation.coordinates[i]['y'] + options['line_width']
+            && mouse_pos.y > annotation.coordinates[i]['y'] - options['line_width'] ){
             clicked = true;
             if(dKeyDown){
                 dataset.frames[frameIndex].annotations.splice(num_annotation, 1);
@@ -424,9 +428,7 @@ function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
                 index_point_clicked = i;
             }
             else if(hKeyDown){
-                dataset.frames[frameIndex].annotations[num_annotation].hidden = !dataset.frames[frameIndex].annotations[num_annotation].hidden;
-                if(dataset.frames[frameIndex].annotations[num_annotation].hidden) showMessage({'type': 'success', 'message': 'Annotation is now hidden'});
-                else showMessage({'type': 'success', 'message': 'Annotation is now visible'});
+                dataset.frames[frameIndex].annotations[num_annotation].coordinates[i]['hidden'] ^= true;
                 refreshImage();
             }
         }
@@ -440,8 +442,10 @@ function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
         var vertical = false;
         var line_width = options['line_width'];
         for(var i = 0; i < annotation.coordinates.length-1; i++){
-            [ax , ay]= annotation.coordinates[i];
-            [bx , by]= annotation.coordinates[i+1];
+            ax = annotation.coordinates[i]['x'];
+            ay = annotation.coordinates[i]['y'];
+            bx = annotation.coordinates[i+1]['x'];
+            by = annotation.coordinates[i+1]['y'];
 
             //have to find if a point is in a line
             //y = ax + b
@@ -487,16 +491,8 @@ function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
                 showMessage({'type': 'success', 'message': 'Box deleted'});
                 refreshImage();
             }
-            else if(hKeyDown){
-                dataset.frames[frameIndex].annotations[num_annotation].hidden = !dataset.frames[frameIndex].annotations[num_annotation].hidden;
-                if(dataset.frames[frameIndex].annotations[num_annotation].hidden) showMessage({'type': 'success', 'message': 'Annotation is now hidden'});
-                else showMessage({'type': 'success', 'message': 'Annotation is now visible'});
-                refreshImage();
-            }
         }
     }
-
-
 }
 
 /**
@@ -529,7 +525,7 @@ function getBoundMoving(){
 }
 
 /**
- *
+ * 
  */
 function stopBoundMoving(){
     if(bound_moving['all']){
@@ -558,11 +554,11 @@ function getTimeAnnotations(){
 }
 
 /**
- * stop time a given annotation
+ * stop a given time annotation
  */
 function stopTimeAnnotation(aLabelAnnotation){
     for(var i = 0; i < timeAnnotations.length; i++){
-        if(timeAnnotations[i].label === aLabelAnnotation){
+        if(timeAnnotations[i].label === aLabelAnnotation){ 
             timeAnnotations[i].frameEnd = frameIndex;
             if((timeAnnotations[i].frameEnd - timeAnnotations[i].frameStart) > 0){
                 pushNewAnnotation(timeAnnotations[i], 'time');
@@ -637,7 +633,7 @@ function pushNewAnnotation(anAnnotation, type){
                 'shape'             : 'line',
                 'junctions_number'  : anAnnotation.nbJunctions,
                 'label'             : anAnnotation.label,
-                'group_name'       : anAnnotation.group_name,
+                'group_name'        : anAnnotation.group_name,
                 'multilabels'       : assign_multilabels,
                 'hidden'            : false,
                 'coordinates'       : anAnnotation.coordinates
@@ -649,7 +645,7 @@ function pushNewAnnotation(anAnnotation, type){
             annotation = {
                 'shape'             : 'rectangle',
                 'label'             : anAnnotation.label,
-                'group_name'       : anAnnotation.group_name,
+                'group_name'        : anAnnotation.group_name,
                 'multilabels'       : assign_multilabels,
                 'x'                 : anAnnotation.coordinates[0],
                 'y'                 : anAnnotation.coordinates[1],
@@ -696,7 +692,7 @@ function saveTemporarilyRegion(bb){
  * draw labels on annotations
  */
 function drawLabel(p1, label, type, params = {}){
-    var x = p1[0], y = p1[1];
+    var x = p1['x'], y = p1['y'];
     if(x > 0 && y > 0){
         if(type === "rectangle"){
             // draw the background rectangle
@@ -779,39 +775,41 @@ function drawRectangle(x, y, width, height, label, color){
  * draw points and lines between these points
  */
 function drawPoints(annotation){
-    // first draw the points
-    if(annotation.hidden){
-        context.strokeStyle = options['colorHiddenLine'];
-        context.fillStyle = options['colorHiddenLine'];
-    }
-    else {
-        context.strokeStyle = options['colorLine'];
-        context.fillStyle = options['colorLine'];
-    }
-
-    for(var i = 0; i < annotation.coordinates.length; i++){
-        if(annotation.coordinates[i][0] > 0){
-            context.beginPath();
-            context.arc(annotation.coordinates[i][0], annotation.coordinates[i][1], options['circle_diameter'], 0, Math.PI*2, true);
-            context.fill();
-            context.closePath();
-        }
-    }
-
-    //and then, if necessary, draw lines between the points
+     //if necessary, draw lines between the points
     for(var j = 0; j < annotation.coordinates.length - 1; j++){
-        if(annotation.coordinates[j][0] > 0 && annotation.coordinates[j+1][0] > 0) {
+        if(annotation.coordinates[j]['x'] > 0 && annotation.coordinates[j+1]['x'] > 0) {
+            context.strokeStyle = options['colorLine'];
+            context.fillStyle = options['colorLine'];
             context.beginPath();
-            context.moveTo(annotation.coordinates[j][0], annotation.coordinates[j][1]);
-            context.lineTo(annotation.coordinates[j + 1][0], annotation.coordinates[j + 1][1]);
+            context.moveTo(annotation.coordinates[j]['x'], annotation.coordinates[j]['y']);
+            context.lineTo(annotation.coordinates[j + 1]['x'], annotation.coordinates[j + 1]['y']);
             context.stroke();
             context.closePath();
         }
     }
 
+    //then draw the points
+    for(var i = 0; i < annotation.coordinates.length; i++){
+        coordinate = annotation.coordinates[i];
+        if(coordinate['x'] > 0){
+            if(coordinate['hidden']){
+                context.strokeStyle = options['colorHiddenLine'];
+                context.fillStyle = options['colorHiddenLine'];
+            }
+            else {
+                context.strokeStyle = options['colorLine'];
+                context.fillStyle = options['colorLine'];
+            }
+            context.beginPath();
+            context.arc(coordinate['x'], coordinate['y'], options['circle_diameter'], 0, Math.PI*2, true);
+            context.fill();
+            context.closePath();
+        }
+    }
+
     if(!sKeyDown) {
-        if(annotation.coordinates.length > 1) drawLabel(annotation.coordinates[0], annotation.label, "line", {'color':context.strokeStyle, 'p2':annotation.coordinates[1]});
-        else drawLabel(annotation.coordinates[0], annotation.label, "point", {'color':context.strokeStyle});
+        if(annotation.coordinates.length > 1) drawLabel(annotation.coordinates[0], annotation.label, "line", {'color':options['colorLine'], 'p2':annotation.coordinates[1]});
+        else drawLabel(annotation.coordinates[0], annotation.label, "point", {'color':options['colorLine']});
     }
 }
 
@@ -820,7 +818,6 @@ function drawPoints(annotation){
  */
 function getAndPrintAllBoxesForCurrentImage(){
     context.font = options['labelFont'];
-    var rectangles = [];
     //draw previous bounding boxes if any
     if (typeof dataset.frames[frameIndex] !== "undefined") {
         // spacial objects
@@ -829,7 +826,6 @@ function getAndPrintAllBoxesForCurrentImage(){
             if(annotation.shape === 'rectangle'){
                 //rectangles
                 drawRectangle(annotation.x, annotation.y, annotation.width, annotation.height, annotation.label);
-                rectangles.push(annotation);
             }
             else if(annotation.shape === 'line'){
                 //draw every line of the annotation
@@ -1008,6 +1004,9 @@ function loadDatasetsInfo(){
     });
 }// end loadDatasetsInfo
 
+/**
+ * function called by server.js when OpenCV has finished to track a box
+ */
 function newTrackedBox(new_coord, data){
     bbox = new stateBBox();
     bbox.coordinates[0] = new_coord[0][0];
@@ -1086,7 +1085,7 @@ function setSettings(){
 
                 data.forEach(multilabel => {
                     multilabels.push(multilabel);
-            });
+                });
                 // if yes, create new selects for each category
                 if (multilabels.length > 0) {
                     //var html  = '<div class="btn-group" data-toggle="buttons"><label id="label_multilabels" class="btn btn-danger">';
@@ -1101,7 +1100,7 @@ function setSettings(){
                     // and add each options for this category
                     multilabel.options.forEach(option => {
                         html += '<option value="' + option + '">' + option + '</option>';
-                });
+                    });
                     html += '</select>';
                 });
                     $('#selects_multilabels').html(html);
@@ -1664,8 +1663,8 @@ $(document).ready(function(){
     opencv = new stateOpencv();
     setLoaded = false;                              // flag indicating if the image set has been uploaded
 
-    socket_init();
-
+    //init socker with server
+    socket_init(); 
 
     // load datasets names and populate the drop-down list
     loadDatasetsInfo();
