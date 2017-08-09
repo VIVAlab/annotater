@@ -504,7 +504,7 @@ function getTimeAnnotations(){
 }
 
 /**
- * stop time a given annotation
+ * stop a given time annotation
  */
 function stopTimeAnnotation(aLabelAnnotation){
     for(var i = 0; i < timeAnnotations.length; i++){
@@ -594,7 +594,7 @@ function pushNewAnnotation(anAnnotation, type){
             annotation = {
                 'shape'             : 'rectangle',
                 'label'             : anAnnotation.label,
-                'group_name'       : anAnnotation.group_name,
+                'group_name'       	: anAnnotation.group_name,
                 'multilabels'       : assign_multilabels,
                 'x'                 : anAnnotation.coordinates[0],
                 'y'                 : anAnnotation.coordinates[1],
@@ -1100,7 +1100,7 @@ function addListenerToCanvas(){
                 line.click();
                 drawLineBetweenPoints(line.mx, line.my);
             }
-        }
+        } 
     });
 
     canvas.addEventListener('mousemove', function(e) {
@@ -1587,8 +1587,6 @@ $(document).ready(function(){
     bBox  = new stateBBox();                        // to track the mouse status to create a bounding box
     line  = new stateLine();                        // to track the mouse status to create a bounding box
     setLoaded = false;                              // flag indicating if the image set has been uploaded
-
-
 
     // load datasets names and populate the drop-down list
     loadDatasetsInfo();
