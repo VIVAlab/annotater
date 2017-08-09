@@ -3,8 +3,8 @@
 Configure the annotations you will have on the interface
 
 ### Params
-group_name = name of the group of annotation (ex: "group_name" : "hands")
-type = type of annotation possible : multiple, order, unique, time (ex: "type" : "multiple")
+group_name = name of the group of annotation (ex: "group_name" : "hands")  
+type = type of annotation possible : multiple, order, unique, time (ex: "type" : "multiple")  
 annotations = name of annotations allowed (ex : "annotations" : ["left hand", "right hand"])
 
 ### Example of config.json file
