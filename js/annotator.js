@@ -9,7 +9,7 @@ var timeAnnotations = []; // contains time annotations that are not yet finished
 var timeLabelSelected = 0, timeObjectSelected = 0, labelSelected = 0, objectSelected = 0;
 var key              =  {'a': 65,'c':67,'d':68,'e':69,'h':72,'p':80,'u':85,'r':82,'s':83,'z':90,'left':37,'right':39,'esc':27,'pgup':33,'pgdn':34,'ctrl':17,'shift':16};
 var spacial_settings = [], time_settings = [], multilabels = [];
-var shiftKeyDown, ctrlKeyDown, dKeyDown, sKeyDown, hKeyDown;
+var shiftKeyDown = false, ctrlKeyDown = false, dKeyDown = false, sKeyDown = false, hKeyDown = false;
 var info_box_before_move = {};
 var bound_moving = {'left':false, 'right':false, 'lower':false, 'upper':false, 'all':false};
 var index_point_clicked = -1;
@@ -642,7 +642,7 @@ function saveTemporarilyRegion(bb){
  * draw labels on annotations
  */
 function drawLabel(p1, label, type, params = {}){
-    var x = p1['x'], y = p1['y'];
+    var x = p1[0], y = p1[1];
     if(x > 0 && y > 0){
         if(type === "rectangle"){
             // draw the background rectangle

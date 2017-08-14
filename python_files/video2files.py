@@ -30,7 +30,7 @@ def capture_video(input):
     while(True):
         # Capture frame-by-frame
         ret, frame = cap.read()
-
+        # frame = cv2.flip(frame, -1) # if you want to flip from 180 the input video
         if frame is None:
             break
 
