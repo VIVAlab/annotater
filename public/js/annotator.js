@@ -9,7 +9,7 @@ var timeAnnotations = []; // contains time annotations that are not yet finished
 var timeLabelSelected = 0, timeObjectSelected = 0, labelSelected = 0, objectSelected = 0;
 var key              =  {'a': 65,'c':67,'d':68,'e':69,'h':72,'p':80,'u':85,'r':82,'s':83,'z':90,'left':37,'right':39,'esc':27,'pgup':33,'pgdn':34,'ctrl':17,'shift':16};
 var spacial_settings = [], time_settings = [], multilabels = [];
-var shiftKeyDown, ctrlKeyDown, dKeyDown, sKeyDown, hKeyDown;
+var shiftKeyDown = false, ctrlKeyDown = false, dKeyDown = false, sKeyDown = false, hKeyDown = false;
 var info_box_before_move = {};
 var bound_moving = {'left':false, 'right':false, 'lower':false, 'upper':false, 'all':false};
 var index_point_clicked = -1;
@@ -92,7 +92,12 @@ function stateOpencv () {
  */
 function stateBBox(){
     this.nClicks        = 0;               // number of clicks
-    this.coordinates    = [0, 0, 0, 0];    // coordinates of the bounding box: x, y, width, height
+    this.coordinates    = {
+        'x1'    : 0,
+        'y1'    : 0,
+        'x2'    : 0,
+        'y2'    : 0
+    };
     this.mx             = 0;               // mouse coordinates
     this.my             = 0;
     this.label          = 'default';
@@ -100,12 +105,12 @@ function stateBBox(){
     this.click = function (){             // update states according to the number of clicks
         this.nClicks +=1;
         if(this.nClicks === 1){
-            this.coordinates[0] = this.mx;
-            this.coordinates[1] = this.my;
+            this.coordinates['x1'] = this.mx;
+            this.coordinates['y1'] = this.my;
         }
         else if(this.nClicks === 2){
-            this.coordinates[2] = this.mx;
-            this.coordinates[3] = this.my;
+            this.coordinates['x2'] = this.mx;
+            this.coordinates['y2'] = this.my;
         }
     };
     this.reset = function (){
@@ -303,19 +308,19 @@ function autoCreateTorsoBox(){
             annotation = dataset.frames[frameIndex].annotations[i];
             if(annotation.label === "head" || annotation.label === "Head"){
                 bbox = new stateBBox();
-                bbox.coordinates[0] = (annotation.x + annotation.width/2 - annotation.width*options['auto_creation_torso_width']/2) < 0 ? 0 : annotation.x + annotation.width/2 - annotation.width*options['auto_creation_torso_width']/2;
-                bbox.coordinates[1] = annotation.y + annotation.height;
-                bbox.coordinates[2] = (bbox.coordinates[0] + annotation.width*options['auto_creation_torso_width']) < canvas.width ? annotation.width*options['auto_creation_torso_width'] : canvas.width - bbox.coordinates[0];
-                bbox.coordinates[3] = (bbox.coordinates[1] + annotation.height*options['auto_creation_torso_height']) < canvas.height ? annotation.height*options['auto_creation_torso_height'] : canvas.height - bbox.coordinates[1];
+                bbox.coordinates['x1'] = (annotation.x + annotation.width/2 - annotation.width*options['auto_creation_torso_width']/2) < 0 ? 0 : annotation.x + annotation.width/2 - annotation.width*options['auto_creation_torso_width']/2;
+                bbox.coordinates['y1'] = annotation.y + annotation.height;
+                bbox.coordinates['x2'] = (bbox.coordinates['x1'] + annotation.width*options['auto_creation_torso_width']) < canvas.width ? annotation.width*options['auto_creation_torso_width'] : canvas.width - bbox.coordinates['x1'];
+                bbox.coordinates['y2'] = (bbox.coordinates['y1'] + annotation.height*options['auto_creation_torso_height']) < canvas.height ? annotation.height*options['auto_creation_torso_height'] : canvas.height - bbox.coordinates['y1'];
                 bbox.label = "Torso";
                 bbox.annotationType = annotation.type;
-                drawRectangle(
+                /*drawRectangle(
                     bbox.coordinates[0],
                     bbox.coordinates[1],
                     bbox.coordinates[2],
                     bbox.coordinates[3],
                     bbox.label
-                );
+                );*/
                 pushNewAnnotation(bbox, 'box');
                 refreshImage();
             }
@@ -482,7 +487,6 @@ function clickOnAPointOrLine(annotation, mouse_pos, num_annotation){
                         clicked = true;
                     }
                 }
-
             }
         }
         if(clicked){
@@ -647,10 +651,10 @@ function pushNewAnnotation(anAnnotation, type){
                 'label'             : anAnnotation.label,
                 'group_name'        : anAnnotation.group_name,
                 'multilabels'       : assign_multilabels,
-                'x'                 : anAnnotation.coordinates[0],
-                'y'                 : anAnnotation.coordinates[1],
-                'width'             : anAnnotation.coordinates[2],
-                'height'            : anAnnotation.coordinates[3]
+                'x'                 : anAnnotation.coordinates['x1'],
+                'y'                 : anAnnotation.coordinates['y1'],
+                'width'             : anAnnotation.coordinates['x2'] - anAnnotation.coordinates['x1'],
+                'height'            : anAnnotation.coordinates['y2'] - anAnnotation.coordinates['y1']
             };
             dataset.frames[frameIndex].annotations.push(annotation);
             break;
@@ -680,10 +684,10 @@ function saveTemporarilyRegion(bb){
         temp_region = {
             'type'           :   bb.annotationType,
             'label'          :   bb.label,
-            'x'              :   bb.coordinates[0],
-            'y'              :   bb.coordinates[1],
-            'width'          :   bb.coordinates[2],
-            'height'         :   bb.coordinates[3]
+            'x'                 : bb.coordinates['x1'],
+            'y'                 : bb.coordinates['y1'],
+            'width'             : bb.coordinates['x2'] - bb.coordinates['x1'],
+            'height'            : bb.coordinates['y2'] - bb.coordinates['y1']
         };
     }
 }
@@ -692,7 +696,7 @@ function saveTemporarilyRegion(bb){
  * draw labels on annotations
  */
 function drawLabel(p1, label, type, params = {}){
-    var x = p1['x'], y = p1['y'];
+    var x = p1[0], y = p1[1];
     if(x > 0 && y > 0){
         if(type === "rectangle"){
             // draw the background rectangle
@@ -817,6 +821,7 @@ function drawPoints(annotation){
  * display all the bounding boxes for current image
  */
 function getAndPrintAllBoxesForCurrentImage(){
+    var rectangles = [];
     context.font = options['labelFont'];
     //draw previous bounding boxes if any
     if (typeof dataset.frames[frameIndex] !== "undefined") {
@@ -826,6 +831,7 @@ function getAndPrintAllBoxesForCurrentImage(){
             if(annotation.shape === 'rectangle'){
                 //rectangles
                 drawRectangle(annotation.x, annotation.y, annotation.width, annotation.height, annotation.label);
+                rectangles.push(annotation);
             }
             else if(annotation.shape === 'line'){
                 //draw every line of the annotation
@@ -835,10 +841,10 @@ function getAndPrintAllBoxesForCurrentImage(){
         //lines which are currently drawing
         if(line.nbClicks > 0){
             for(i = 0; i < line.coordinates.length - 1; i++){
-                if(line.coordinates[i][0] > 0 && line.coordinates[i+1][0] > 0){
+                if(line.coordinates[i]['x'] > 0 && line.coordinates[i+1]['x'] > 0){
                     context.beginPath();
-                    context.moveTo(line.coordinates[i][0], line.coordinates[i][1]);
-                    context.lineTo(line.coordinates[i+1][0],line.coordinates[i+1][1]);
+                    context.moveTo(line.coordinates[i]['x'], line.coordinates[i]['y']);
+                    context.lineTo(line.coordinates[i+1]['x'],line.coordinates[i+1]['y']);
                     context.strokeStyle = options['colorLine'];
                     context.stroke();
                     context.closePath();
@@ -897,24 +903,25 @@ function drawBoundingBox(x, y){
     context.beginPath();
     // draw bounding box interactively
     if(bBox.nClicks === 1){
-        var widthBB  =  x - bBox.coordinates[0];
-        var heightBB =  y - bBox.coordinates[1];
+        var widthBB  =  x - bBox.coordinates['x1'];
+        var heightBB =  y - bBox.coordinates['y1'];
         refreshImage();
-        context.rect(bBox.coordinates[0], bBox.coordinates[1], widthBB, heightBB);
+        context.rect(bBox.coordinates['x1'], bBox.coordinates['y1'], widthBB, heightBB);
         showMessage('Annotating ...');
     }
     // draw full bounding box because user has selected the second point
     else if(bBox.nClicks === 2){
-        bBox.coordinates[2] =  x - bBox.coordinates[0];
-        bBox.coordinates[3] =  y - bBox.coordinates[1];
+        var temp; 
         // put the rectangle with positive height and width
-        if(bBox.coordinates[2] < 0){
-            bBox.coordinates[0] += bBox.coordinates[2];
-            bBox.coordinates[2] *= -1;
+        if(x - bBox.coordinates['x1'] < 0){
+            temp = bBox.coordinates['x1'];
+            bBox.coordinates['x1'] = bBox.coordinates['x2'];
+            bBox.coordinates['x2'] = temp;
         }
-        if(bBox.coordinates[3] < 0){
-            bBox.coordinates[1] += bBox.coordinates[3];
-            bBox.coordinates[3] *= -1;
+        if(y - bBox.coordinates['y2'] < 0){
+            temp = bBox.coordinates['y1'];
+            bBox.coordinates['y1'] = bBox.coordinates['y2'];
+            bBox.coordinates['y2'] = temp;
         }
 
         if(bBox.annotationType === "time_annotation"){
@@ -1009,10 +1016,10 @@ function loadDatasetsInfo(){
  */
 function newTrackedBox(new_coord, data){
     bbox = new stateBBox();
-    bbox.coordinates[0] = new_coord[0][0];
-    bbox.coordinates[1] = new_coord[0][1];
-    bbox.coordinates[2] = new_coord[1][0] - new_coord[0][0];
-    bbox.coordinates[3] = new_coord[1][1] - new_coord[0][1];
+    bbox.coordinates['x1'] = new_coord[0][0];
+    bbox.coordinates['y1'] = new_coord[0][1];
+    bbox.coordinates['x2'] = new_coord[1][0];
+    bbox.coordinates['y2'] = new_coord[1][1];
     bbox.group_name = data.region.group_name;
     bbox.label = data.region.label;
     pushNewAnnotation(bbox, 'box');
@@ -1279,7 +1286,11 @@ function addListenersToDocument(){
                     wait_for_click? showMessage({'type':'danger', 'message':'You have to draw the box for time annotation'}) :  showMessage({'type':'danger', 'message':'You have to finish resizing/moving the box before changing frame'});
                 }
                 else if (frameIndex < dataset.frames.length - 1) {
-                    opencv.annotations = getAndPrintAllBoxesForCurrentImage();
+                    getAndPrintAllBoxesForCurrentImage().forEach(function(annotation){
+                        if(annotation.group_name == "opencv"){
+                            opencv.annotations.push(annotation);
+                        }
+                    });
                     opencv.start();
                     showMessage("Tracking annotations, please wait ...");
                     sendRegionsToServer();
@@ -1329,10 +1340,10 @@ function addListenersToDocument(){
                     frameIndex--;
                     for(var num_annotation = 0; num_annotation < dataset.frames[frameIndex].annotations.length; num_annotation++){
                         var annotation = dataset.frames[frameIndex].annotations[num_annotation];
-                        bBox.coordinates[0] =  annotation.x;
-                        bBox.coordinates[1] =  annotation.y;
-                        bBox.coordinates[2] =  annotation.width;
-                        bBox.coordinates[3] =  annotation.height;
+                        bBox.coordinates['x1'] =  annotation.x;
+                        bBox.coordinates['y1'] =  annotation.y;
+                        bBox.coordinates['x2'] =  annotation.x + annotation.width;
+                        bBox.coordinates['y2'] =  annotation.y + annotation.height;
                         bBox.label          =  annotation.label;
                         bBox.annotationType =  annotation.type;
                         frameIndex++;

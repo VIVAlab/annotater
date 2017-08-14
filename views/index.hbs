@@ -48,24 +48,37 @@
                 </div>
             </div>  <!-- row1-->
 
-            <div class="row">
+            <div id="div_auto_create_box" class="row">
                 <div class="vertical_align">
                     <div class="btn-group" data-toggle="buttons">
                         <label id="label_auto_create_box" class="btn btn-danger">
-                            <input  id="auto_create_box" type="checkbox" autocomplete="off">Autocreation of torso box :
+                            <input  id="checkbox_auto_create_box" type="checkbox" autocomplete="off">Autocreation of torso box :
                             <span id="span_auto_create_box" class="glyphicon glyphicon-remove"></span>
                         </label>
                     </div>
                 </div>
             </div>
+
             <!-- canvas -->
             <div class="row">
-                <canvas id="canvas" tabindex=0 width=480 height=360></canvas>
+                <div id="div_multilabels" class="col-md-2">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label id="label_multilabels" class="btn btn-danger">
+                            <input id="checkbox_multilabels" type="checkbox" autocomplete="off">Multilabels ? :
+                            <span id="span_multilabels" class="glyphicon glyphicon-remove"></span>
+                        </label>
+                    </div>
+                    <div id="selects_multilabels"></div>
+                </div>
+
+                <div class="col-md-10">
+                    <canvas id="canvas" tabindex=0></canvas>
+                </div>
             </div>
             <!-- end canvas-->
 
             <!-- details -->
-            <div id="details" class="row">
+            <div id="details" class="col-md-12">
                 <div id="frames" class="col-sm-4"></div>
                 <div id="spatial_annotations" class="col-sm-4"></div>
                 <div id="time_annotations" class="col-sm-4"></div>
@@ -243,7 +256,7 @@
 <script src="js/sprintf.js"></script>
 <script src="js/json2html.js"></script>
 <script src="js/jquery.json2html.js"></script>
-<!--<script src="http://code.jquery.com/qunit/qunit-2.0.1.js"></script>-->
+<script src="http://code.jquery.com/qunit/qunit-2.0.1.js"></script>
 <script src="js/socket.io/socket.io.js"></script>
 <script src="js/socket.js"></script>
 <script src="js/annotator.js?v=28"></script>
