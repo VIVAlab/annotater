@@ -156,9 +156,12 @@ function stateLine(){
 function stateTimeAnnotation(){
     this.frameStart = 0;
     this.frameEnd   = 0;
-    this.type       = 'default';
+    this.group_name = 'default';
     this.label      = 'default';
-    this.region     = null;
+    this.x = 0;
+    this.y = 0;
+    this.height = 0;
+    this.width = 0;
 } // end stateBox
 
 /**
@@ -663,14 +666,14 @@ function pushNewAnnotation(anAnnotation, type){
                 'shape'         : 'rectangle',
                 'frameStart'    :   anAnnotation.frameStart,
                 'frameEnd'      :   anAnnotation.frameEnd,
+                'type'          :   anAnnotation.annotationType,
+                'group_name'    :   anAnnotation.group_name,
                 'label'         :   anAnnotation.label,
                 'multilabels'   :   assign_multilabels,
-                'region'        :   {
-                    "x": anAnnotation.region.x,
-                    "y": anAnnotation.region.y,
-                    "width": anAnnotation.region.width,
-                    "height": anAnnotation.region.height,
-                }
+                "x"             :   anAnnotation.x,
+                "y"             : anAnnotation.y,
+                "width"         : anAnnotation.width,
+                "height"        : anAnnotation.height,
             };
             dataset.time_annotations.push(annotation);
     }
@@ -683,11 +686,12 @@ function saveTemporarilyRegion(bb){
     if(temp_region == null){
         temp_region = {
             'type'           :   bb.annotationType,
+            'group_name'     :   bb.group_name,
             'label'          :   bb.label,
-            'x'                 : bb.coordinates['x1'],
-            'y'                 : bb.coordinates['y1'],
-            'width'             : bb.coordinates['x2'] - bb.coordinates['x1'],
-            'height'            : bb.coordinates['y2'] - bb.coordinates['y1']
+            'x'              :   bb.coordinates[0],
+            'y'              :   bb.coordinates[1],
+            'width'          :   bb.coordinates[2],
+            'height'         :   bb.coordinates[3]
         };
     }
 }
@@ -696,7 +700,7 @@ function saveTemporarilyRegion(bb){
  * draw labels on annotations
  */
 function drawLabel(p1, label, type, params = {}){
-    var x = p1[0], y = p1[1];
+    var x = p1['x'], y = p1['y'];
     if(x > 0 && y > 0){
         if(type === "rectangle"){
             // draw the background rectangle
@@ -731,8 +735,8 @@ function drawLabel(p1, label, type, params = {}){
         }
         else if(type === "line"){
             //draw label along a line
-            var dx = params['p2'][0] - x;
-            var dy = params['p2'][1] - y;
+            var dx = params['p2']['x'] - x;
+            var dy = params['p2']['y'] - y;
             var padding = 2;
             var pad = padding / Math.sqrt(dx*dx+dy*dy);
 
@@ -758,20 +762,20 @@ function drawLabel(p1, label, type, params = {}){
 /**
  * draw a rectangle on the canvas
  */
-function drawRectangle(x, y, width, height, label, color){
+function drawRectangle(annotation, color){
     if(color == null) color = options['colorBoundingBox'];
     context.beginPath();
     context.rect(
-        x,
-        y,
-        width,
-        height);
+        annotation.x,
+        annotation.y,
+        annotation.width,
+        annotation.height);
     context.strokeStyle = color;
     context.stroke();
     context.closePath();
 
     if(!sKeyDown){
-        drawLabel([x, y], label, "rectangle");
+        drawLabel(annotation, annotation.label, "rectangle");
     }
 }
 
@@ -830,7 +834,7 @@ function getAndPrintAllBoxesForCurrentImage(){
             annotation = dataset.frames[frameIndex].annotations[i];
             if(annotation.shape === 'rectangle'){
                 //rectangles
-                drawRectangle(annotation.x, annotation.y, annotation.width, annotation.height, annotation.label);
+                drawRectangle(annotation);
                 rectangles.push(annotation);
             }
             else if(annotation.shape === 'line'){
@@ -841,7 +845,7 @@ function getAndPrintAllBoxesForCurrentImage(){
         //lines which are currently drawing
         if(line.nbClicks > 0){
             for(i = 0; i < line.coordinates.length - 1; i++){
-                if(line.coordinates[i]['x'] > 0 && line.coordinates[i+1]['x'] > 0){
+                if(line.coordinates[i]['x'] > 0 && line.coordinates[i+1]['y'] > 0){
                     context.beginPath();
                     context.moveTo(line.coordinates[i]['x'], line.coordinates[i]['y']);
                     context.lineTo(line.coordinates[i+1]['x'],line.coordinates[i+1]['y']);
@@ -860,20 +864,21 @@ function getAndPrintAllBoxesForCurrentImage(){
         for(var j = 0; j< nTimeObjects; j++ ){
             annotation = dataset.time_annotations[j];
             if(annotation.frameStart <= frameIndex && annotation.frameEnd >= frameIndex){
-                drawRectangle(annotation.region.x, annotation.region.y, annotation.region.width, annotation.region.height, annotation.label, options['colorTimeBoundingBox']);
+                drawRectangle(annotation, annotation.label, options['colorTimeBoundingBox']);
             }
         }
         // if we have time annotation in progress
         for(var ta = 0; ta < timeAnnotations.length; ta++ ){
             annotation = timeAnnotations[ta];
-            drawRectangle(annotation.region.x, annotation.region.y, annotation.region.width, annotation.region.height, annotation.label, options['colorTimeBoundingBox']);
+            drawRectangle(annotation, annotation.label, options['colorTimeBoundingBox']);
         }
         // if we have in memory a temporary region
         if(temp_region != null){
-            drawRectangle(temp_region.x, temp_region.y, temp_region.width, temp_region.height, temp_region.label, options['colorTimeBoundingBox']);
+            drawRectangle(temp_region, options['colorTimeBoundingBox']);
         }
         return rectangles;
     }
+
 } //end function getAndPrintAllBoxesForCurrentImage
 
 /**
@@ -1453,14 +1458,16 @@ function addListenersToDocument(){
         } else {
             var annotation          = new stateTimeAnnotation();
             annotation.frameStart   = frameIndex;
-            annotation.region = temp_region ? temp_region : {} ;
 
-            temp_region = null;
-            var type        = document.getElementById("select_time_annotation_type");
-            annotation.type = type.options[type.selectedIndex].value;
-
-            var label           = document.getElementById("select_time_annotation_label");
-            annotation.label    = label.options[label.selectedIndex].value;
+            if(temp_region){
+                annotation.x = temp_region.x;
+                annotation.y = temp_region.y;
+                annotation.label        = temp_region.label;
+                annotation.group_name   = temp_region.group_name;
+                annotation.width        = temp_region.width;
+                annotation.height       = temp_region.height;
+                temp_region = null;
+            }
 
             var start_btn = document.getElementById("start_box_time_annotation");
             start_btn.innerText="Start drawing";
